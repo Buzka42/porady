@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kompletny Przewodnik Treningowo-Żywieniowy</title>
+    <title>Complete Training & Nutrition Guide</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         body {
@@ -30,7 +30,24 @@
             max-width: 400px;
             margin: 0 auto;
             height: 300px;
+            min-height: 300px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            padding: 10px;
         }
+        
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        .chart-fallback {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+        
         .flowchart-step {
             display: flex;
             align-items: center;
@@ -81,107 +98,182 @@
             transform: translateY(-1px);
             box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
         }
+        
+        /* Language Switcher Styles */
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            color: #4f46e5;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+        .lang-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+            }
+        }
+        .lang-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 120px;
+        }
+        .lang-dropdown.active {
+            display: flex;
+        }
+        .lang-option {
+            padding: 10px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .lang-option:hover {
+            background: #f3f4f6;
+        }
+        .lang-option.active {
+            background: #e0e7ff;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body class="min-h-screen">
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+        <div class="lang-btn" id="currentLang">EN</div>
+        <div class="lang-dropdown" id="langDropdown">
+            <div class="lang-option" data-lang="pl">🇵🇱 Polski</div>
+            <div class="lang-option active" data-lang="en">🇬🇧 English</div>
+        </div>
+    </div>
+    
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- Header -->
         <header class="text-center mb-12">
-            <h1 class="text-5xl md:text-7xl font-black text-white mb-4 drop-shadow-lg">
-                💪 TRENING & ŻYWIENIE
+            <h1 class="text-5xl md:text-7xl font-black text-white mb-4 drop-shadow-lg" data-lang="mainHeading">
+                💪 TRAINING & NUTRITION
             </h1>
-            <p class="text-xl md:text-2xl text-white/90 font-medium">
-                Kompletny przewodnik do budowania mięśni i zdrowego odżywiania
+            <p class="text-xl md:text-2xl text-white/90 font-medium" data-lang="subHeading">
+                Complete guide to muscle building and healthy nutrition
             </p>
+
         </header>
 
         <!-- Navigation -->
         <nav class="glass-card p-6 mb-8">
             <div class="flex flex-wrap justify-center gap-4">
-                <a href="#training" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold hover:scale-105 transition-transform">
-                    🏋️ Trening
+                <a href="#training" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold hover:scale-105 transition-transform" data-lang="navTraining">
+                    🏋️ Training
                 </a>
-                <a href="#nutrition" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold hover:scale-105 transition-transform">
-                    🥗 Żywienie
+                <a href="#nutrition" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold hover:scale-105 transition-transform" data-lang="navNutrition">
+                    🥗 Nutrition
                 </a>
-                <a href="#supplements" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold hover:scale-105 transition-transform">
-                    💊 Suplementy
-                </a>
-                <a href="#ai-assistant" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold hover:scale-105 transition-transform">
-                    🤖 Asystent AI
+                <a href="#supplements" class="btn-primary text-white px-6 py-3 rounded-lg font-semibold hover:scale-105 transition-transform" data-lang="navSupplements">
+                    💊 Supplements
                 </a>
             </div>
         </nav>
 
         <!-- Training Section -->
         <section id="training" class="mb-16">
-            <h2 class="text-4xl font-bold section-header text-center mb-8">
-                🏋️ Zasady Wzrostu Mięśni
+            <h2 class="text-4xl font-bold section-header text-center mb-8" data-lang="trainingHeading">
+                🏋️ Muscle Growth Principles
             </h2>
             
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Stretching Under Load -->
                 <div class="glass-card p-8">
-                    <h3 class="text-2xl font-bold gradient-bg-1 text-white p-4 rounded-lg mb-6 text-center">
-                        💪 Rozciąganie pod obciążeniem
+                    <h3 class="text-2xl font-bold gradient-bg-1 text-white p-4 rounded-lg mb-6 text-center" data-lang="stretchingHeading">
+                        💪 Stretching Under Load
                     </h3>
-                    <p class="text-gray-700 mb-6 leading-relaxed">
-                        Wykonywanie ćwiczeń w pełnym zakresie ruchu jest kluczowe dla hipertrofii. 
-                        Kiedy mięsień jest w pełni rozciągnięty pod ciężarem, dochodzi do większych 
-                        mikrouszkodzeń i aktywacji szlaków anabolicznych.
+                    <p class="text-gray-700 mb-6 leading-relaxed" data-lang="stretchingText">
+                        Performing exercises through full range of motion is crucial for hypertrophy. 
+                        When a muscle is fully stretched under load, greater microdamage and activation 
+                        of anabolic pathways occur.
                     </p>
                     <div class="w-full flex flex-col items-center mt-4">
-                        <img src="rom.png" alt="Pełny zakres ruchu - ilustracja" class="max-w-full h-auto rounded-lg shadow-lg" style="max-height: 280px;">
+                        <img src="rom.png" alt="Full range of motion - illustration" class="max-w-full h-auto rounded-lg shadow-lg" style="max-height: 280px;">
                         <p class="text-xs text-gray-500 mt-2">
-                            Źródło: <a href="https://www.youtube.com/@JeffNippard" target="_blank" class="text-blue-500 hover:text-blue-700 underline">Kanał YT Jeff Nippard</a>
+                            <span data-lang="sourceText">Source: </span><a href="https://www.youtube.com/@JeffNippard" target="_blank" class="text-blue-500 hover:text-blue-700 underline" data-lang="jeffNippardLink">Jeff Nippard's YouTube Channel</a>
                         </p>
                     </div>
                 </div>
 
                 <!-- RIR Training -->
                 <div class="glass-card p-8">
-                    <h3 class="text-2xl font-bold gradient-bg-2 text-white p-4 rounded-lg mb-6 text-center">
-                        🎯 Intensywność: RIR 1-3
+                    <h3 class="text-2xl font-bold gradient-bg-2 text-white p-4 rounded-lg mb-6 text-center" data-lang="rirHeading">
+                        🎯 Intensity: RIR 1-3
                     </h3>
-                    <p class="text-gray-700 mb-6 leading-relaxed">
-                        "Reps in Reserve" (RIR) to liczba powtórzeń, które jeszcze mógłbyś zrobić. 
-                        Trenuj z RIR 1-3 dla maksymalnej stymulacji wzrostu.
+                    <p class="text-gray-700 mb-6 leading-relaxed" data-lang="rirText">
+                        "Reps in Reserve" (RIR) is the number of repetitions you could still perform. 
+                        Train with RIR 1-3 for maximum growth stimulation.
                     </p>
                     <div class="chart-container">
-                        <canvas id="rirChart"></canvas>
+                        <canvas id="rirChart" style="display: none;"></canvas>
+                        <div id="rirChartFallback" class="chart-fallback">
+                            Chart loading... If this message persists, please click the "Initialize Charts" button above.
+                        </div>
                     </div>
                 </div>
 
-                <!-- Optimal Volume -->
+                <!-- Weekly Set Volume -->
                 <div class="glass-card p-8">
-                    <h3 class="text-2xl font-bold gradient-bg-4 text-white p-4 rounded-lg mb-6 text-center">
-                        📊 Optymalna Objętość
+                    <h3 class="text-2xl font-bold gradient-bg-4 text-white p-4 rounded-lg mb-6 text-center" data-lang="volumeHeading">
+                        📊 Weekly Set Volume
                     </h3>
-                    <p class="text-gray-700 mb-6 leading-relaxed">
-                        Więcej nie zawsze znaczy lepiej. Powyżej 6 ciężkich serii na grupę mięśniową 
-                        korzyści maleją. Skup się na jakości!
+                    <p class="text-gray-700 mb-6 leading-relaxed" data-lang="volumeText">
                     </p>
                     <div class="chart-container">
-                        <canvas id="volumeChart"></canvas>
+                        <canvas id="volumeChart" style="display: none;"></canvas>
+                        <div id="volumeChartFallback" class="chart-fallback">
+                            Chart loading... If this message persists, please click the "Initialize Charts" button above.
+                        </div>
                     </div>
                 </div>
 
                 <!-- Warm-up Scheme -->
                 <div class="glass-card p-8">
-                    <h3 class="text-2xl font-bold gradient-bg-5 text-white p-4 rounded-lg mb-6 text-center">
-                        🔥 Schemat Rozgrzewki
+                    <h3 class="text-2xl font-bold gradient-bg-5 text-white p-4 rounded-lg mb-6 text-center" data-lang="warmupHeading">
+                        🔥 Warm-up Scheme
                     </h3>
                     <div class="space-y-4">
-                        <div class="flowchart-step gradient-bg-5 text-white">
-                            <p><span class="font-bold">Seria 1:</span><br>50% ciężaru (5-10 powtórzeń)</p>
+                        <div class="flowchart-step gradient-bg-5 text-white" data-lang="warmupStep1">
+                            <p><span class="font-bold">Set 1:</span><br>50% load (12 reps)</p>
                         </div>
                         <div class="text-center flowchart-arrow">⬇</div>
-                        <div class="flowchart-step gradient-bg-2 text-white">
-                            <p><span class="font-bold">Seria 2:</span><br>70% ciężaru (3-5 powtórzeń)</p>
-                        </div>
-                        <div class="text-center flowchart-arrow">⬇</div>
-                        <div class="flowchart-step gradient-bg-4 text-white">
-                            <p><span class="font-bold">Serie Główne:</span><br>100% ciężaru (RIR 1-3)</p>
+                        <div class="flowchart-step gradient-bg-4 text-white" data-lang="warmupMainSets">
+                            <p><span class="font-bold">Main Sets:</span><br>100% load (RIR 1-3)</p>
                         </div>
                     </div>
                 </div>
@@ -190,53 +282,53 @@
 
         <!-- Nutrition Section -->
         <section id="nutrition" class="mb-16">
-            <h2 class="text-4xl font-bold section-header text-center mb-8">
-                🥗 Kalkulator Makroskładników i Żywienie
+            <h2 class="text-4xl font-bold section-header text-center mb-8" data-lang="nutritionHeading">
+                🥗 Macro Calculator and Nutrition
             </h2>
             
             <!-- Macro Calculator -->
             <div class="glass-card p-8 mb-8">
-                <h3 class="text-2xl font-bold gradient-bg-1 text-white p-4 rounded-lg mb-6 text-center">
-                    🧮 Kalkulator Makroskładników
+                <h3 class="text-2xl font-bold gradient-bg-1 text-white p-4 rounded-lg mb-6 text-center" data-lang="macroCalculatorHeading">
+                    🧮 Macro Calculator
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <div>
-                        <label for="weight" class="block text-gray-700 text-sm font-bold mb-2">Waga (kg):</label>
+                        <label for="weight" class="block text-gray-700 text-sm font-bold mb-2" data-lang="weightLabel">Weight (kg):</label>
                         <input type="number" id="weight" placeholder="70" class="w-full p-3 rounded-lg border">
                     </div>
                     <div>
-                        <label for="activityLevel" class="block text-gray-700 text-sm font-bold mb-2">Poziom Aktywności:</label>
+                        <label for="activityLevel" class="block text-gray-700 text-sm font-bold mb-2" data-lang="activityLevelLabel">Activity Level:</label>
                         <select id="activityLevel" class="w-full p-3 rounded-lg border">
-                            <option value="sedentary">Siedzący</option>
-                            <option value="light">Lekko aktywny</option>
-                            <option value="moderate">Umiarkowanie aktywny</option>
-                            <option value="heavy">Bardzo aktywny</option>
-                            <option value="veryHeavy">Ekstremalnie aktywny</option>
+                            <option value="sedentary">Sedentary</option>
+                            <option value="light">Lightly Active</option>
+                            <option value="moderate">Moderately Active</option>
+                            <option value="heavy">Very Active</option>
+                            <option value="veryHeavy">Extremely Active</option>
                         </select>
                     </div>
                     <div>
-                        <label for="steps" class="block text-gray-700 text-sm font-bold mb-2">Kroki dziennie:</label>
+                        <label for="steps" class="block text-gray-700 text-sm font-bold mb-2" data-lang="stepsLabel">Steps per day:</label>
                         <input type="number" id="steps" placeholder="7000" class="w-full p-3 rounded-lg border">
                     </div>
                 </div>
 
-                <button onclick="calculateNutrition()" class="btn-primary text-white font-bold py-4 px-8 rounded-lg w-full mb-6">
-                    Oblicz Makroskładniki! 🚀
+                <button onclick="calculateNutrition()" class="btn-primary text-white font-bold py-4 px-8 rounded-lg w-full mb-6" data-lang="calculateButton">
+                    Calculate Macros! 🚀
                 </button>
 
                 <div id="results" class="glass-card p-6 hidden">
-                    <h4 class="text-xl font-bold text-purple-700 mb-4">📊 Twoje Wyniki:</h4>
+                    <h4 class="text-xl font-bold text-purple-700 mb-4" data-lang="resultsHeading">📊 Your Results:</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div class="space-y-2">
-                            <p><span class="font-semibold">Białko:</span> <span id="proteinResult" class="text-blue-600 font-bold"></span> g</p>
-                            <p><span class="font-semibold">Tłuszcze:</span> <span id="fatResult" class="text-green-600 font-bold"></span> g</p>
-                            <p><span class="font-semibold">Węglowodany:</span> <span id="carbResult" class="text-orange-600 font-bold"></span> g</p>
+                            <p><span class="font-semibold" data-lang="proteinLabel">Protein:</span> <span id="proteinResult" class="text-blue-600 font-bold"></span> g</p>
+                            <p><span class="font-semibold" data-lang="fatLabel">Fats:</span> <span id="fatResult" class="text-green-600 font-bold"></span> g</p>
+                            <p><span class="font-semibold" data-lang="carbsLabel">Carbohydrates:</span> <span id="carbResult" class="text-orange-600 font-bold"></span> g</p>
                         </div>
                         <div class="space-y-2">
-                            <p><span class="font-semibold">Utrzymanie:</span> <span id="maintenanceCalories" class="font-bold"></span> kcal</p>
-                            <p><span class="font-semibold">Deficyt (-200):</span> <span id="smallDeficit" class="font-bold"></span> kcal</p>
-                            <p><span class="font-semibold">Nadwyżka (+200):</span> <span id="smallSurplus" class="font-bold"></span> kcal</p>
+                            <p><span class="font-semibold" data-lang="maintenanceLabel">Maintenance:</span> <span id="maintenanceCalories" class="font-bold"></span> kcal</p>
+                            <p><span class="font-semibold" data-lang="deficitLabel">Deficit (-200):</span> <span id="smallDeficit" class="font-bold"></span> kcal</p>
+                            <p><span class="font-semibold" data-lang="surplusLabel">Surplus (+200):</span> <span id="smallSurplus" class="font-bold"></span> kcal</p>
                         </div>
                     </div>
                 </div>
@@ -246,188 +338,191 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Protein Sources -->
                 <div class="glass-card p-6">
-                    <h4 class="text-xl font-bold gradient-bg-2 text-white p-3 rounded-lg mb-4 text-center">
-                        🥩 Źródła Białka
+                    <h4 class="text-xl font-bold gradient-bg-2 text-white p-3 rounded-lg mb-4 text-center" data-lang="proteinSourcesHeading">
+                        🥩 Protein Sources
                     </h4>
                     
                     <!-- Animal Proteins -->
                     <div class="mb-4">
-                        <h5 class="font-bold text-blue-600 mb-2">🐄 Białka Zwierzęce:</h5>
+                        <h5 class="font-bold text-blue-600 mb-2" data-lang="animalProteinsHeading">🐄 Animal Proteins:</h5>
                         <ul class="space-y-1 text-sm">
-                            <li><span class="font-semibold text-blue-600">Pierś z kurczaka:</span> ~31g/100g</li>
-                            <li><span class="font-semibold text-blue-600">Łosoś:</span> ~20g/100g</li>
-                            <li><span class="font-semibold text-blue-600">Tuńczyk:</span> ~30g/100g</li>
-                            <li><span class="font-semibold text-blue-600">Jajka:</span> ~13g/100g (6g na duże jajko)</li>
-                            <li><span class="font-semibold text-blue-600">Chudy twaróg:</span> ~18g/100g</li>
-                            <li><span class="font-semibold text-blue-600">Grecki jogurt (0%):</span> ~10g/100g</li>
-                            <li><span class="font-semibold text-blue-600">Chuda wołowina:</span> ~26g/100g</li>
-                            <li><span class="font-semibold text-blue-600">Indyk (pierś):</span> ~29g/100g</li>
+                            <li data-lang="chickenBreast"><span class="font-semibold text-blue-600">Chicken breast:</span> ~31g/100g</li>
+                            <li data-lang="salmonProtein"><span class="font-semibold text-blue-600">Salmon:</span> ~20g/100g</li>
+                            <li data-lang="tunaProtein"><span class="font-semibold text-blue-600">Tuna:</span> ~30g/100g</li>
+                            <li data-lang="eggsProtein"><span class="font-semibold text-blue-600">Eggs:</span> ~13g/100g (6g per large egg)</li>
+                            <li data-lang="cottageCheeseProtein"><span class="font-semibold text-blue-600">Low-fat cottage cheese:</span> ~18g/100g</li>
+                            <li data-lang="greekYogurtProtein"><span class="font-semibold text-blue-600">Greek yogurt (0%):</span> ~10g/100g</li>
+                            <li data-lang="leanBeefProtein"><span class="font-semibold text-blue-600">Lean beef:</span> ~26g/100g</li>
+                            <li data-lang="turkeyBreastProtein"><span class="font-semibold text-blue-600">Turkey (breast):</span> ~29g/100g</li>
                         </ul>
                     </div>
 
                     <!-- Plant Proteins -->
                     <div class="mb-4">
-                        <h5 class="font-bold text-green-600 mb-2">🌱 Białka Roślinne:</h5>
+                        <h5 class="font-bold text-green-600 mb-2" data-lang="plantProteinsHeading">🌱 Plant Proteins:</h5>
                         <ul class="space-y-1 text-sm">
-                            <li><span class="font-semibold text-green-600">Seitan:</span> ~25g/100g (z glutenu pszennego)</li>
-                            <li><span class="font-semibold text-green-600">Tempeh:</span> ~19g/100g (fermentowana soja)</li>
-                            <li><span class="font-semibold text-green-600">Tofu (twardy):</span> ~15g/100g</li>
-                            <li><span class="font-semibold text-green-600">Edamame:</span> ~11g/100g (młoda soja)</li>
-                            <li><span class="font-semibold text-green-600">Soczewica (gotowana):</span> ~9g/100g</li>
-                            <li><span class="font-semibold text-green-600">Ciecierzyca (gotowana):</span> ~8g/100g</li>
-                            <li><span class="font-semibold text-green-600">Fasola czarna:</span> ~9g/100g</li>
-                            <li><span class="font-semibold text-green-600">Quinoa (gotowana):</span> ~4g/100g</li>
-                            <li><span class="font-semibold text-green-600">Nasiona konopi:</span> ~31g/100g</li>
-                            <li><span class="font-semibold text-green-600">Spirulina (suszona):</span> ~57g/100g</li>
-                            <li><span class="font-semibold text-green-600">Orzechy arachidowe:</span> ~26g/100g</li>
-                            <li><span class="font-semibold text-green-600">Migdały:</span> ~21g/100g</li>
-                            <li><span class="font-semibold text-green-600">Pestki dyni:</span> ~24g/100g</li>
+                            <li data-lang="seitanProtein"><span class="font-semibold text-green-600">Seitan:</span> ~25g/100g (from wheat gluten)</li>
+                            <li data-lang="tempehProtein"><span class="font-semibold text-green-600">Tempeh:</span> ~19g/100g (fermented soy)</li>
+                            <li data-lang="tofuProtein"><span class="font-semibold text-green-600">Tofu (firm):</span> ~15g/100g</li>
+                            <li data-lang="edamameProtein"><span class="font-semibold text-green-600">Edamame:</span> ~11g/100g (young soybeans)</li>
+                            <li data-lang="lentilsProtein"><span class="font-semibold text-green-600">Lentils (uncooked):</span> ~25g/100g</li>
+                            <li data-lang="chickpeasProtein"><span class="font-semibold text-green-600">Chickpeas (uncooked):</span> ~19g/100g</li>
+                            <li data-lang="blackBeansProtein"><span class="font-semibold text-green-600">Black beans (uncooked):</span> ~21g/100g</li>
+                            <li data-lang="quinoaProtein"><span class="font-semibold text-green-600">Quinoa (uncooked):</span> ~14g/100g</li>
+                            <li data-lang="hempSeedsProtein"><span class="font-semibold text-green-600">Hemp seeds:</span> ~31g/100g</li>
+                            <li data-lang="spirulinaProtein"><span class="font-semibold text-green-600">Spirulina (dried):</span> ~57g/100g</li>
+                            <li data-lang="peanutsProtein"><span class="font-semibold text-green-600">Peanuts:</span> ~26g/100g</li>
+                            <li data-lang="almondsProtein"><span class="font-semibold text-green-600">Almonds:</span> ~21g/100g</li>
+                            <li data-lang="pumpkinSeedsProtein"><span class="font-semibold text-green-600">Pumpkin seeds:</span> ~24g/100g</li>
                         </ul>
                     </div>
 
                     <!-- Soy Products Info -->
                     <div class="mt-4 p-3 bg-green-50 rounded-lg">
-                        <p class="text-xs text-green-800">
-                            <span class="font-semibold">💡 Produkty sojowe:</span> Zawierają wszystkie niezbędne aminokwasy. 
-                            Izoflawony sojowe mogą wspierać zdrowie skóry i nie wpływają negatywnie na poziom hormonów u zdrowych osób.
+                        <p class="text-xs text-green-800" data-lang="soyProductsInfo">
+                            <span class="font-semibold">💡 Soy Products:</span> Contain all essential amino acids. 
+                            Soy isoflavones may support skin health and do not negatively affect hormone levels in healthy individuals.
                         </p>
                     </div>
 
                     <!-- Protein Graph -->
                     <div class="mt-6">
-                        <h5 class="font-bold text-purple-600 mb-3 text-center">📈 Korzyści z Białka vs Spożycie</h5>
+                        <h5 class="font-bold text-purple-600 mb-3 text-center" data-lang="proteinBenefitsHeading">📈 Protein Benefits vs Intake</h5>
                         <div class="chart-container bg-gray-50 rounded-lg p-4">
                             <canvas id="proteinGraph"></canvas>
+                            <div id="proteinGraphFallback" class="chart-fallback" style="display: none;">
+                                Chart loading... If this message persists, please click the "Initialize Charts" button above.
+                            </div>
                         </div>
-                        <p class="text-xs text-gray-600 text-center mt-2">
-                            <i>Wykres: Korzyści z białka w zależności od spożycia (szacunkowy). Zwiększone spożycie białka powyżej 1.7 g/kg nie przynosi liniowo większych korzyści.</i>
+                        <p class="text-xs text-gray-600 text-center mt-2" data-lang="proteinGraphNote">
+                            <i>Chart: Protein benefits depending on intake (estimated). Increased protein consumption above 1.7 g/kg does not linearly bring greater benefits.</i>
                         </p>
                     </div>
                 </div>
 
                 <!-- Healthy Fats -->
                 <div class="glass-card p-6">
-                    <h4 class="text-xl font-bold gradient-bg-3 text-white p-3 rounded-lg mb-4 text-center">
-                        🥑 Zdrowe Tłuszcze
+                    <h4 class="text-xl font-bold gradient-bg-3 text-white p-3 rounded-lg mb-4 text-center" data-lang="healthyFatsHeading">
+                        🥑 Healthy Fats
                     </h4>
                     
                     <!-- Monounsaturated Fats -->
                     <div class="mb-4">
-                        <h5 class="font-bold text-green-600 mb-2">🥑 Jednonienasycone (MUFA):</h5>
+                        <h5 class="font-bold text-green-600 mb-2" data-lang="monounsaturatedFatsHeading">🥑 Monounsaturated (MUFA):</h5>
                         <ul class="space-y-1 text-sm">
-                            <li><span class="font-semibold text-green-600">Awokado:</span> ~15g tłuszczu/100g</li>
-                            <li><span class="font-semibold text-green-600">Oliwa z oliwek extra virgin:</span> ~73% MUFA</li>
-                            <li><span class="font-semibold text-green-600">Migdały:</span> ~31g tłuszczu/100g</li>
-                            <li><span class="font-semibold text-green-600">Orzechy laskowe:</span> ~61g tłuszczu/100g</li>
-                            <li><span class="font-semibold text-green-600">Orzechy makadamia:</span> ~76g tłuszczu/100g</li>
-                            <li><span class="font-semibold text-green-600">Olej rzepakowy:</span> ~62% MUFA</li>
+                            <li data-lang="avocadoFats"><span class="font-semibold text-green-600">Avocado:</span> ~15g fat/100g</li>
+                            <li data-lang="oliveOilFats"><span class="font-semibold text-green-600">Extra virgin olive oil:</span> ~73% MUFA</li>
+                            <li data-lang="almondsFats"><span class="font-semibold text-green-600">Almonds:</span> ~31g fat/100g</li>
+                            <li data-lang="hazelnutsFats"><span class="font-semibold text-green-600">Hazelnuts:</span> ~61g fat/100g</li>
+                            <li data-lang="macadamiaNutsFats"><span class="font-semibold text-green-600">Macadamia nuts:</span> ~76g fat/100g</li>
+                            <li data-lang="rapeseedOilFats"><span class="font-semibold text-green-600">Rapeseed oil:</span> ~62% MUFA</li>
                         </ul>
                     </div>
 
                     <!-- Omega-3 Sources -->
                     <div class="mb-4">
-                        <h5 class="font-bold text-blue-600 mb-2">🐟 Omega-3 (EPA/DHA/ALA):</h5>
+                        <h5 class="font-bold text-blue-600 mb-2" data-lang="omega3Heading">🐟 Omega-3 (EPA/DHA/ALA):</h5>
                         <ul class="space-y-1 text-sm">
-                            <li><span class="font-semibold text-blue-600">Łosoś:</span> ~2.3g omega-3/100g</li>
-                            <li><span class="font-semibold text-blue-600">Makrela:</span> ~2.7g omega-3/100g</li>
-                            <li><span class="font-semibold text-blue-600">Sardynki:</span> ~1.5g omega-3/100g</li>
-                            <li><span class="font-semibold text-green-600">Nasiona chia:</span> ~17g ALA/100g</li>
-                            <li><span class="font-semibold text-green-600">Nasiona lnu:</span> ~23g ALA/100g</li>
-                            <li><span class="font-semibold text-green-600">Orzechy włoskie:</span> ~9g ALA/100g</li>
-                            <li><span class="font-semibold text-green-600">Olej lniany:</span> ~53g ALA/100g</li>
+                            <li data-lang="salmonOmega3"><span class="font-semibold text-blue-600">Salmon:</span> ~2.3g omega-3/100g</li>
+                            <li data-lang="mackerelOmega3"><span class="font-semibold text-blue-600">Mackerel:</span> ~2.7g omega-3/100g</li>
+                            <li data-lang="sardinesOmega3"><span class="font-semibold text-blue-600">Sardines:</span> ~1.5g omega-3/100g</li>
+                            <li data-lang="chiaSeedsOmega3"><span class="font-semibold text-green-600">Chia seeds:</span> ~17g ALA/100g</li>
+                            <li data-lang="flaxSeedsOmega3"><span class="font-semibold text-green-600">Flax seeds:</span> ~23g ALA/100g</li>
+                            <li data-lang="walnutsOmega3"><span class="font-semibold text-green-600">Walnuts:</span> ~9g ALA/100g</li>
+                            <li data-lang="flaxseedOilOmega3"><span class="font-semibold text-green-600">Flaxseed oil:</span> ~53g ALA/100g</li>
                         </ul>
                     </div>
 
                     <!-- Other Healthy Fats -->
                     <div class="mb-4">
-                        <h5 class="font-bold text-purple-600 mb-2">🌰 Inne Zdrowe Źródła:</h5>
+                        <h5 class="font-bold text-purple-600 mb-2" data-lang="otherHealthySourcesHeading">🌰 Other Healthy Sources:</h5>
                         <ul class="space-y-1 text-sm">
-                            <li><span class="font-semibold text-purple-600">Nasiona słonecznika:</span> ~51g tłuszczu/100g</li>
-                            <li><span class="font-semibold text-purple-600">Tahini (pasta sezamowa):</span> ~54g tłuszczu/100g</li>
-                            <li><span class="font-semibold text-purple-600">Olej kokosowy:</span> ~87% nasycone (MCT)</li>
-                            <li><span class="font-semibold text-purple-600">Masło orzechowe:</span> ~50g tłuszczu/100g</li>
-                            <li><span class="font-semibold text-blue-600">Żółtka jaj:</span> ~27g tłuszczu/100g</li>
+                            <li data-lang="sunflowerSeedsFats"><span class="font-semibold text-purple-600">Sunflower seeds:</span> ~51g fat/100g</li>
+                            <li data-lang="tahiniFats"><span class="font-semibold text-purple-600">Tahini (sesame paste):</span> ~54g fat/100g</li>
+                            <li data-lang="coconutOilFats"><span class="font-semibold text-purple-600">Coconut oil:</span> ~87% saturated (MCT)</li>
+                            <li data-lang="peanutButterFats"><span class="font-semibold text-purple-600">Peanut butter:</span> ~50g fat/100g</li>
+                            <li data-lang="eggYolksFats"><span class="font-semibold text-blue-600">Egg yolks:</span> ~27g fat/100g</li>
                         </ul>
                     </div>
 
                     <div class="mt-4 p-3 bg-green-50 rounded-lg">
-                        <p class="text-xs text-green-800">
-                            <span class="font-semibold">💡 Dlaczego ważne?</span> Wspierają wchłanianie witamin A, D, E, K, 
-                            produkcję hormonów, zdrowie mózgu i serca. Omega-3 ma działanie przeciwzapalne.
+                        <p class="text-xs text-green-800" data-lang="whyFatsImportant">
+                            <span class="font-semibold">💡 Why important?</span> Support absorption of vitamins A, D, E, K, 
+                            hormone production, brain and heart health. Omega-3 has anti-inflammatory effects.
                         </p>
                     </div>
                 </div>
 
                 <!-- Carbohydrates -->
                 <div class="glass-card p-6">
-                    <h4 class="text-xl font-bold gradient-bg-4 text-white p-3 rounded-lg mb-4 text-center">
-                        🌾 Węglowodany i Indeks Glikemiczny
+                    <h4 class="text-xl font-bold gradient-bg-4 text-white p-3 rounded-lg mb-4 text-center" data-lang="carbohydratesHeading">
+                        🌾 Carbohydrates and Glycemic Index
                     </h4>
                     
                     <!-- Glycemic Index Explanation -->
                     <div class="mb-4 p-3 bg-blue-50 rounded-lg">
-                        <h5 class="font-bold text-blue-700 mb-2">📚 Czym jest Indeks Glikemiczny (IG)?</h5>
-                        <p class="text-xs text-blue-800 mb-2">
-                            IG to skala 0-100 pokazująca, jak szybko węglowodany z danego produktu podnoszą poziom glukozy we krwi. 
-                            Produkty o niskim IG powodują wolniejszy, bardziej stabilny wzrost cukru, co jest korzystne dla:
+                        <h5 class="font-bold text-blue-700 mb-2" data-lang="glycemicIndexHeading">📚 What is Glycemic Index (GI)?</h5>
+                        <p class="text-xs text-blue-800 mb-2" data-lang="glycemicIndexExplanation">
+                            GI is a 0-100 scale showing how quickly carbohydrates from a given product raise blood glucose levels. 
+                            Low GI products cause a slower, more stable sugar rise, which is beneficial for:
                         </p>
-                        <ul class="text-xs text-blue-800 space-y-1">
-                            <li>• Utrzymania stabilnej energii</li>
-                            <li>• Kontroli apetytu i sytości</li>
-                            <li>• Lepszej kontroli poziomu cukru</li>
-                            <li>• Redukcji nagłych skoków insuliny</li>
+                        <ul class="text-xs text-blue-800 space-y-1" data-lang="glycemicIndexBenefits">
+                            <li>• Maintaining stable energy</li>
+                            <li>• Appetite and satiety control</li>
+                            <li>• Better blood sugar control</li>
+                            <li>• Reducing sudden insulin spikes</li>
                         </ul>
                     </div>
 
                     <!-- Low GI Foods -->
                     <div class="mb-4">
-                        <h5 class="font-bold text-green-600 mb-2">🟢 Niski IG (<55):</h5>
+                        <h5 class="font-bold text-green-600 mb-2" data-lang="lowGIHeading">🟢 Low GI (<55):</h5>
                         <ul class="space-y-1 text-sm">
-                            <li><span class="font-semibold text-green-600">Warzywa liściaste:</span> IG <15 (szpinak, sałata, rukola)</li>
-                            <li><span class="font-semibold text-green-600">Brokuły, kalafior:</span> IG ~10</li>
-                            <li><span class="font-semibold text-green-600">Jagody (borówki, maliny):</span> IG ~25</li>
-                            <li><span class="font-semibold text-green-600">Jabłka:</span> IG ~36</li>
-                            <li><span class="font-semibold text-green-600">Pomarańcze:</span> IG ~45</li>
-                            <li><span class="font-semibold text-green-600">Soczewica:</span> IG ~29</li>
-                            <li><span class="font-semibold text-green-600">Ciecierzyca:</span> IG ~33</li>
-                            <li><span class="font-semibold text-green-600">Fasola:</span> IG ~24</li>
-                            <li><span class="font-semibold text-green-600">Quinoa:</span> IG ~53</li>
-                            <li><span class="font-semibold text-green-600">Gruszki:</span> IG ~33</li>
-                            <li><span class="font-semibold text-green-600">Jogurt naturalny:</span> IG ~14</li>
+                            <li data-lang="leafyVegetablesGI"><span class="font-semibold text-green-600">Leafy vegetables:</span> GI <15 (spinach, lettuce, arugula)</li>
+                            <li data-lang="broccoliCauliflowerGI"><span class="font-semibold text-green-600">Broccoli, cauliflower:</span> GI ~10</li>
+                            <li data-lang="berriesGI"><span class="font-semibold text-green-600">Berries (blueberries, raspberries):</span> GI ~25</li>
+                            <li data-lang="applesGI"><span class="font-semibold text-green-600">Apples:</span> GI ~36</li>
+                            <li data-lang="orangesGI"><span class="font-semibold text-green-600">Oranges:</span> GI ~45</li>
+                            <li data-lang="lentilsGI"><span class="font-semibold text-green-600">Lentils:</span> GI ~29</li>
+                            <li data-lang="chickpeasGI"><span class="font-semibold text-green-600">Chickpeas:</span> GI ~33</li>
+                            <li data-lang="beansGI"><span class="font-semibold text-green-600">Beans:</span> GI ~24</li>
+                            <li data-lang="quinoaGI"><span class="font-semibold text-green-600">Quinoa:</span> GI ~53</li>
+                            <li data-lang="pearsGI"><span class="font-semibold text-green-600">Pears:</span> GI ~33</li>
+                            <li data-lang="naturalYogurtGI"><span class="font-semibold text-green-600">Natural yogurt:</span> GI ~14</li>
                         </ul>
                     </div>
 
                     <!-- Medium GI Foods -->
                     <div class="mb-4">
-                        <h5 class="font-bold text-yellow-600 mb-2">🟡 Średni IG (56-69):</h5>
+                        <h5 class="font-bold text-yellow-600 mb-2" data-lang="mediumGIHeading">🟡 Medium GI (56-69):</h5>
                         <ul class="space-y-1 text-sm">
-                            <li><span class="font-semibold text-yellow-600">Owsianka:</span> IG ~55</li>
-                            <li><span class="font-semibold text-yellow-600">Brązowy ryż:</span> IG ~50-55</li>
-                            <li><span class="font-semibold text-yellow-600">Słodkie ziemniaki:</span> IG ~63</li>
-                            <li><span class="font-semibold text-yellow-600">Banany (dojrzałe):</span> IG ~62</li>
-                            <li><span class="font-semibold text-yellow-600">Chleb pełnoziarnisty:</span> IG ~56</li>
-                            <li><span class="font-semibold text-yellow-600">Makaron pełnoziarnisty:</span> IG ~58</li>
-                            <li><span class="font-semibold text-yellow-600">Kasza gryczana:</span> IG ~54</li>
+                            <li data-lang="oatmealGI"><span class="font-semibold text-yellow-600">Oatmeal:</span> GI ~55</li>
+                            <li data-lang="brownRiceGI"><span class="font-semibold text-yellow-600">Brown rice:</span> GI ~50-55</li>
+                            <li data-lang="sweetPotatoesGI"><span class="font-semibold text-yellow-600">Sweet potatoes:</span> GI ~63</li>
+                            <li data-lang="bananasGI"><span class="font-semibold text-yellow-600">Bananas (ripe):</span> GI ~62</li>
+                            <li data-lang="wholeGrainBreadGI"><span class="font-semibold text-yellow-600">Whole grain bread:</span> GI ~56</li>
+                            <li data-lang="wholeGrainPastaGI"><span class="font-semibold text-yellow-600">Whole grain pasta:</span> GI ~58</li>
+                            <li data-lang="buckwheatGI"><span class="font-semibold text-yellow-600">Buckwheat:</span> GI ~54</li>
                         </ul>
                     </div>
 
                     <!-- High GI Foods -->
                     <div class="mb-4">
-                        <h5 class="font-bold text-red-600 mb-2">🔴 Wysoki IG (>70) - Ograniczaj:</h5>
+                        <h5 class="font-bold text-red-600 mb-2" data-lang="highGIHeading">🔴 High GI (>70) - Limit:</h5>
                         <ul class="space-y-1 text-sm">
-                            <li><span class="font-semibold text-red-600">Biały ryż:</span> IG ~73</li>
-                            <li><span class="font-semibold text-red-600">Ziemniaki (gotowane):</span> IG ~78</li>
-                            <li><span class="font-semibold text-red-600">Chleb biały:</span> IG ~75</li>
-                            <li><span class="font-semibold text-red-600">Arbuz:</span> IG ~72</li>
-                            <li><span class="font-semibold text-red-600">Płatki kukurydziane:</span> IG ~81</li>
-                            <li><span class="font-semibold text-red-600">Glukoza:</span> IG 100 (punkt odniesienia)</li>
+                            <li data-lang="whiteRiceGI"><span class="font-semibold text-red-600">White rice:</span> GI ~73</li>
+                            <li data-lang="potatoesGI"><span class="font-semibold text-red-600">Potatoes (boiled):</span> GI ~78</li>
+                            <li data-lang="whiteBreadGI"><span class="font-semibold text-red-600">White bread:</span> GI ~75</li>
+                            <li data-lang="watermelonGI"><span class="font-semibold text-red-600">Watermelon:</span> GI ~72</li>
+                            <li data-lang="cornFlakesGI"><span class="font-semibold text-red-600">Corn flakes:</span> GI ~81</li>
+                            <li data-lang="glucoseGI"><span class="font-semibold text-red-600">Glucose:</span> GI 100 (reference point)</li>
                         </ul>
                     </div>
 
                     <div class="mt-4 p-3 bg-yellow-50 rounded-lg">
-                        <p class="text-xs text-yellow-800">
-                            <span class="font-semibold">⚡ Wskazówka:</span> Łączenie węglowodanów z białkiem i tłuszczami 
-                            spowalnia wchłanianie i obniża efektywny IG posiłku. Błonnik również spowalnia trawienie.
+                        <p class="text-xs text-yellow-800" data-lang="carbTip">
+                            <span class="font-semibold">⚡ Tip:</span> Combining carbohydrates with protein and fats 
+                            slows absorption and lowers the effective GI of a meal. Fiber also slows digestion.
                         </p>
                     </div>
                 </div>
@@ -435,94 +530,506 @@
 
             <!-- Hunger Management -->
             <div class="glass-card p-8 mt-8">
-                <h3 class="text-2xl font-bold gradient-bg-5 text-white p-4 rounded-lg mb-6 text-center">
-                    🍽️ Zarządzanie Głodem
+                <h3 class="text-2xl font-bold gradient-bg-5 text-white p-4 rounded-lg mb-6 text-center" data-lang="hungerManagementHeading">
+                    🍽️ Hunger Management
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <ul class="space-y-3 text-sm">
-                        <li><span class="font-semibold text-purple-600">Częste posiłki:</span> Stabilny poziom cukru</li>
-                        <li><span class="font-semibold text-purple-600">Białko w każdym posiłku:</span> Największa sytość</li>
-                        <li><span class="font-semibold text-purple-600">Błonnik:</span> Zwiększa objętość posiłku</li>
-                        <li><span class="font-semibold text-purple-600">Nawodnienie:</span> Często mylimy pragnienie z głodem</li>
-                    </ul>
-                    <ul class="space-y-3 text-sm">
-                        <li><span class="font-semibold text-purple-600">Yerba Mate:</span> Naturalne tłumienie apetytu</li>
-                        <li><span class="font-semibold text-purple-600">Post przerywany:</span> Kontrola kalorii</li>
-                        <li><span class="font-semibold text-purple-600">Uważne jedzenie:</span> Lepsze odczuwanie sytości</li>
-                    </ul>
+                    <!-- Strategies for Hunger Control -->
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">⏰</div>
+                            <div>
+                                <h4 class="font-bold text-purple-600" data-lang="frequentMealsHungerTitle">Frequent Meals</h4>
+                                <p class="text-sm text-gray-700" data-lang="frequentMealsHunger">Stable blood sugar level</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">🥩</div>
+                            <div>
+                                <h4 class="font-bold text-purple-600" data-lang="proteinSatietyHungerTitle">Protein in Every Meal</h4>
+                                <p class="text-sm text-gray-700" data-lang="proteinSatietyHunger">Greatest satiety</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">🌾</div>
+                            <div>
+                                <h4 class="font-bold text-purple-600" data-lang="fiberHungerTitle">Fiber</h4>
+                                <p class="text-sm text-gray-700" data-lang="fiberHunger">Increases meal volume</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">💧</div>
+                            <div>
+                                <h4 class="font-bold text-purple-600" data-lang="hydrationHungerTitle">Hydration</h4>
+                                <p class="text-sm text-gray-700" data-lang="hydrationHunger">We often confuse thirst with hunger</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Advanced Techniques -->
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">🍵</div>
+                            <div>
+                                <h4 class="font-bold text-green-600" data-lang="yerbaMateHungerTitle">Yerba Mate</h4>
+                                <p class="text-sm text-gray-700" data-lang="yerbaMateHunger">Natural appetite suppression</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">⏱️</div>
+                            <div>
+                                <h4 class="font-bold text-green-600" data-lang="intermittentFastingHungerTitle">Intermittent Fasting</h4>
+                                <p class="text-sm text-gray-700" data-lang="intermittentFastingHunger">Calorie control</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">🧠</div>
+                            <div>
+                                <h4 class="font-bold text-green-600" data-lang="mindfulEatingHungerTitle">Mindful Eating</h4>
+                                <p class="text-sm text-gray-700" data-lang="mindfulEatingHunger">Better perception of satiety</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Supplements Section -->
         <section id="supplements" class="mb-16">
-            <h2 class="text-4xl font-bold section-header text-center mb-8">💊 Suplementy</h2>
+            <h2 class="text-4xl font-bold section-header text-center mb-8" data-lang="supplementsHeading">💊 Supplements</h2>
             
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="glass-card p-8">
-                    <h3 class="text-2xl font-bold gradient-bg-1 text-white p-4 rounded-lg mb-6 text-center">⚡ Kreatyna</h3>
-                    <p class="text-gray-700 mb-4">Jeden z najlepiej przebadanych suplementów. Pomaga mięśniom produkować energię podczas intensywnego wysiłku.</p>
-                    <ul class="space-y-2 text-sm">
-                        <li>✅ <span class="font-semibold">Zwiększona siła i moc</span></li>
-                        <li>✅ <span class="font-semibold">Wzrost masy mięśniowej</span></li>
-                        <li>✅ <span class="font-semibold">Poprawa wydolności</span></li>
-                        <li>✅ <span class="font-semibold">Korzyści poznawcze</span></li>
+                    <h3 class="text-2xl font-bold gradient-bg-1 text-white p-4 rounded-lg mb-6 text-center" data-lang="creatineHeading">⚡ Creatine</h3>
+                    <p class="text-gray-700 mb-4" data-lang="creatineText">One of the most well-researched supplements. Helps muscles produce energy during intense effort.</p>
+                    <ul class="space-y-2 text-sm" data-lang="creatineBenefits">
+                        <li>✅ <span class="font-semibold">Increased strength and power</span></li>
+                        <li>✅ <span class="font-semibold">Muscle mass growth</span></li>
+                        <li>✅ <span class="font-semibold">Improved endurance</span></li>
+                        <li>✅ <span class="font-semibold">Cognitive benefits</span></li>
                     </ul>
                     <div class="mt-4 p-3 bg-purple-50 rounded-lg">
-                        <p class="text-xs text-purple-800"><span class="font-semibold">Dawkowanie:</span> 3-5g dziennie</p>
+                        <p class="text-xs text-purple-800" data-lang="creatineDosage"><span class="font-semibold">Dosage:</span> 3-5g daily</p>
                     </div>
                 </div>
 
                 <div class="glass-card p-8">
-                    <h3 class="text-2xl font-bold gradient-bg-2 text-white p-4 rounded-lg mb-6 text-center">🥤 Odżywka Białkowa</h3>
-                    <p class="text-gray-700 mb-4">Wygodny sposób na uzupełnienie dziennego zapotrzebowania na białko.</p>
-                    <ul class="space-y-2 text-sm">
-                        <li>🥛 <span class="font-semibold">Serwatkowe (Whey):</span> Szybko wchłanialne</li>
-                        <li>🐄 <span class="font-semibold">Kazeina:</span> Wolno wchłanialne</li>
-                        <li>🌱 <span class="font-semibold">Sojowe:</span> Pełnowartościowe roślinne</li>
-                        <li>🌿 <span class="font-semibold">Grochowe/Ryżowe:</span> Dla wegan</li>
+                    <h3 class="text-2xl font-bold gradient-bg-2 text-white p-4 rounded-lg mb-6 text-center" data-lang="proteinPowderHeading">🥤 Protein Powder</h3>
+                    <p class="text-gray-700 mb-4" data-lang="proteinPowderText">Convenient way to supplement daily protein needs.</p>
+                    <ul class="space-y-2 text-sm" data-lang="proteinTypes">
+                        <li>🥛 <span class="font-semibold">Whey:</span> Fast absorbing</li>
+                        <li>🐄 <span class="font-semibold">Casein:</span> Slow absorbing</li>
+                        <li>🌱 <span class="font-semibold">Soy:</span> Complete plant-based</li>
+                        <li>🌿 <span class="font-semibold">Pea/Rice:</span> For vegans</li>
                     </ul>
                     <div class="mt-4 p-3 bg-blue-50 rounded-lg">
-                        <p class="text-xs text-blue-800"><span class="font-semibold">Kiedy:</span> Po treningu lub jako uzupełnienie</p>
+                        <p class="text-xs text-blue-800" data-lang="proteinWhen"><span class="font-semibold">When:</span> After workout or as a supplement</p>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- AI Assistant Section -->
-        <section id="ai-assistant" class="mb-16">
-            <h2 class="text-4xl font-bold section-header text-center mb-8">🤖 Asystent AI</h2>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="glass-card p-8">
-                    <h3 class="text-2xl font-bold gradient-bg-3 text-white p-4 rounded-lg mb-6 text-center">🏋️ Wskazówki Treningowe</h3>
-                    <p class="text-gray-700 mb-4">Opisz swój trening i otrzymaj spersonalizowaną wskazówkę.</p>
-                    <textarea id="trainingInput" class="w-full p-3 border rounded-lg mb-4" rows="4" placeholder="Np. 'Trenuję nogi, 4 serie przysiadów, RIR 1'"></textarea>
-                    <button onclick="getTrainingTip()" class="btn-primary text-white font-bold py-3 px-6 rounded-lg w-full mb-4">Generuj Wskazówkę 🎯</button>
-                    <div id="trainingTipOutput" class="glass-card p-4 min-h-[100px] text-gray-700">Twoja wskazówka pojawi się tutaj.</div>
-                </div>
-
-                <div class="glass-card p-8">
-                    <h3 class="text-2xl font-bold gradient-bg-4 text-white p-4 rounded-lg mb-6 text-center">🥗 Pytania o Żywienie</h3>
-                    <p class="text-gray-700 mb-4">Zadaj pytanie dotyczące odżywiania.</p>
-                    <textarea id="nutritionQuestion" class="w-full p-3 border rounded-lg mb-4" rows="4" placeholder="Np. 'Jakie są najlepsze źródła białka dla wegan?'"></textarea>
-                    <button onclick="askNutritionQuestion()" class="btn-primary text-white font-bold py-3 px-6 rounded-lg w-full mb-4">Zapytaj AI 🧠</button>
-                    <div id="nutritionAnswer" class="glass-card p-4 min-h-[100px] text-gray-700">Odpowiedź pojawi się tutaj.</div>
-                </div>
-            </div>
-            
-            <div id="loadingIndicator" class="text-center mt-4 text-white hidden">
-                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-                <p class="mt-2">Ładowanie...</p>
             </div>
         </section>
 
         <footer class="text-center text-white/80 py-8">
-            <p class="text-lg font-medium">💪 Trenuj mądrze, jedz świadomie, regeneruj się! 🥗</p>
+            <p class="text-lg font-medium" data-lang="footerText">💪 Train wisely, eat mindfully, recover well! 🥗</p>
+            <p class="text-sm mt-2" data-lang="createdBy">Page created by Patryk Dębowski</p>
         </footer>
     </div>
 
     <script>
+        // Language translations
+        const translations = {
+            pl: {
+                title: "Kompletny Przewodnik Treningowo-Żywieniowy",
+                mainHeading: "💪 TRENING & ŻYWIENIE",
+                subHeading: "Kompletny przewodnik do budowania mięśni i zdrowego odżywiania",
+                navTraining: "🏋️ Trening",
+                navNutrition: "🥗 Żywienie",
+                navSupplements: "💊 Suplementy",
+                trainingHeading: "🏋️ Zasady Wzrostu Mięśni",
+                stretchingHeading: "💪 Rozciąganie pod obciążeniem",
+                stretchingText: "Wykonywanie ćwiczeń przez pełny zakres ruchu jest kluczowe dla hipertrofii. Gdy mięsień jest w pełni rozciągnięty pod obciążeniem, następuje większe mikrouszkodzenie włókien mięśniowych i aktywacja dróg anabolicznych.",
+                rirHeading: "🎯 Intensywność: RIR 1-3",
+                rirText: "\"Reps in Reserve\" (RIR) to liczba powtórzeń, które nadal możesz wykonać przed momentem failure. Trenuj z RIR 1-3 dla maksymalnej stymulacji wzrostu mięśni.",
+                volumeHeading: "📊 Tygodniowa Objętość Serii",
+                volumeText: "<strong>Podstawowe informacje o tygodniowej objętości treningowej dla wzrostu mięśni:</strong>" +
+                        "<ul class=\"list-disc pl-5 space-y-1 mt-2\">" +
+                            "<li><strong>Minimalna efektywna dawka:</strong> Minimum 4 serie na grupę mięśni tygodniowo dla wykrywalnego wzrostu masy mięśniowej</li>" +
+                            "<li><strong>Optymalny zakres:</strong> 10-20 serii na grupę mięśni tygodniowo dla większości wyszkolonych osób</li>" +
+                            "<li><strong>Zmniejszające się zwroty:</strong> Korzyści znacząco maleją poza 12-20 seriami na grupę mięśni tygodniowo</li>" +
+                            "<li><strong>Bardzo wysoka objętość:</strong> >20 serii może przynosić marginalne korzyści dla zaawansowanych sportowców, ale może utrudniać regenerację</li>" +
+                            "<li><strong>Indywidualizacja:</strong> Rozpocznij z umiarkowaną objętością i stopniowo ją zwiększaj w zależności od regeneracji i postępów</li>" +
+                        "</ul>",
+                warmupHeading: "🔥 Schemat Rozgrzewki",
+                warmupStep1: "Seria 1: 50% obciążenia (12 powtórzeń)",
+                warmupMainSets: "Główne serie: 100% obciążenia (RIR 1-3)",
+                nutritionHeading: "🥗 Kalkulator Makroskładników i Żywienie",
+                macroCalculatorHeading: "🧮 Kalkulator Makroskładników",
+                weightLabel: "Waga (kg):",
+                activityLevelLabel: "Poziom Aktywności:",
+                stepsLabel: "Kroki dziennie:",
+                calculateButton: "Oblicz Makroskładniki! 🚀",
+                resultsHeading: "📊 Twoje Wyniki:",
+                proteinLabel: "Białko:",
+                fatLabel: "Tłuszcze:",
+                carbsLabel: "Węglowodany:",
+                maintenanceLabel: "Utrzymanie:",
+                deficitLabel: "Deficyt (-200):",
+                surplusLabel: "Nadwyżka (+200):",
+                proteinSourcesHeading: "🥩 Źródła Białka",
+                animalProteinsHeading: "🐄 Białka Zwierzęce:",
+                plantProteinsHeading: "🌱 Białka Roślinne:",
+                chickenBreast: "Pierś kurczaka: ~31g/100g",
+                salmonProtein: "Łosoś: ~20g/100g",
+                tunaProtein: "Tuńczyk: ~30g/100g",
+                eggsProtein: "Jajka: ~13g/100g (6g na duże jajko)",
+                cottageCheeseProtein: "Twaróg light: ~18g/100g",
+                greekYogurtProtein: "Jogurt grecki (0%): ~10g/100g",
+                leanBeefProtein: "Chuda wołowina: ~26g/100g",
+                turkeyBreastProtein: "Indyk (pierś): ~29g/100g",
+                seitanProtein: "Seitan: ~25g/100g (z glutenu pszenicy)",
+                tempehProtein: "Tempeh: ~19g/100g (fermentowana soja)",
+                tofuProtein: "Tofu (zwarte): ~15g/100g",
+                edamameProtein: "Edamame: ~11g/100g (młode owoce soi)",
+                lentilsProtein: "Ciecierzyca (surowa): ~25g/100g",
+                chickpeasProtein: "Groch (surowy): ~19g/100g",
+                blackBeansProtein: "Czarna fasola (surowa): ~21g/100g",
+                quinoaProtein: "Komosa ryżowa (nie ugotowana): ~14g/100g",
+                hempSeedsProtein: "Nasiona konopi: ~31g/100g",
+                spirulinaProtein: "Spirulina (suszona): ~57g/100g",
+                peanutsProtein: "Orzeszki ziemne: ~26g/100g",
+                almondsProtein: "Migdały: ~21g/100g",
+                pumpkinSeedsProtein: "Pestki dyni: ~24g/100g",
+                soyProductsInfo: "💡 Produkty sojowe: Zawierają wszystkie niezbędne aminokwasy. Izoflawony sojowe mogą wspierać zdrowie skóry i nie wpływają negatywnie na poziom hormonów u zdrowych osób.",
+                sourceText: "Źródło: ",
+                jeffNippardLink: "Kanał YouTube Jeffa Nipparda",
+                proteinBenefitsHeading: "📈 Korzyści z białka w zależności od spożycia",
+                proteinGraphNote: "Wykres: Korzyści z białka w zależności od spożycia (szacunkowe). Zwiększona konsumpcja białka powyżej 1,7 g/kg masy ciała nie przynosi liniowo większych korzyści.",
+                healthyFatsHeading: "🥑 Zdrowe Tłuszcze",
+                monounsaturatedFatsHeading: "🥑 Jednonienasycone (MUFA):",
+                avocadoFats: "Awokado: ~15g tłuszczu/100g",
+                oliveOilFats: "Oliwa z oliwek extra virgin: ~73% MUFA",
+                almondsFats: "Migdały: ~31g tłuszczu/100g",
+                hazelnutsFats: "Orzechy laskowe: ~61g tłuszczu/100g",
+                macadamiaNutsFats: "Orzechy makadamia: ~76g tłuszczu/100g",
+                rapeseedOilFats: "Olej rzepakowy: ~62% MUFA",
+                salmonOmega3: "Łosoś: ~2.3g omega-3/100g",
+                mackerelOmega3: "Makrela: ~2.7g omega-3/100g",
+                sardinesOmega3: "Sardynki: ~1.5g omega-3/100g",
+                chiaSeedsOmega3: "Nasiona chia: ~17g ALA/100g",
+                flaxSeedsOmega3: "Nasiona lniane: ~23g ALA/100g",
+                walnutsOmega3: "Orzechy włoskie: ~9g ALA/100g",
+                flaxseedOilOmega3: "Olej lniany: ~53g ALA/100g",
+                sunflowerSeedsFats: "Pestki słonecznika: ~51g tłuszczu/100g",
+                tahiniFats: "Tahini (pasta sezamowa): ~54g tłuszczu/100g",
+                coconutOilFats: "Olej kokosowy: ~87% nasycone (MCT)",
+                peanutButterFats: "Masło orzechowe: ~50g tłuszczu/100g",
+                eggYolksFats: "Żółtka jaj: ~27g tłuszczu/100g",
+                omega3Heading: "🐟 Omega-3 (EPA/DHA/ALA):",
+                otherHealthySourcesHeading: "🌰 Inne Zdrowe Źródła:",
+                whyFatsImportant: "💡 Dlaczego ważne? Wspierają wchłanianie witamin A, D, E, K, produkcję hormonów, zdrowie mózgu i serca. Omega-3 ma działanie przeciwzapalne.",
+                carbohydratesHeading: "🌾 Węglowodany i Indeks Glikemiczny",
+                glycemicIndexHeading: "📚 Czym jest Indeks Glikemiczny (IG)?",
+                leafyVegetablesGI: "Warzywa liściaste: IG <15 (szpinak, sałata, rukola)",
+                broccoliCauliflowerGI: "Brokuły, kalafior: IG ~10",
+                berriesGI: "Jagody (borówki, maliny): IG ~25",
+                applesGI: "Jabłka: IG ~36",
+                orangesGI: "Pomarańcze: IG ~45",
+                lentilsGI: "Ciecierzyca: IG ~29",
+                chickpeasGI: "Groch: IG ~33",
+                beansGI: "Fasola: IG ~24",
+                quinoaGI: "Komosa ryżowa: IG ~53",
+                pearsGI: "Gruszki: IG ~33",
+                naturalYogurtGI: "Naturalny jogurt: IG ~14",
+                oatmealGI: "Owsianka: IG ~55",
+                brownRiceGI: "Brązowy ryż: IG ~50-55",
+                sweetPotatoesGI: "Bataty: IG ~63",
+                bananasGI: "Banany (dojrzałe): IG ~62",
+                wholeGrainBreadGI: "Chleb pełnoziarnisty: IG ~56",
+                wholeGrainPastaGI: "Makaron pełnoziarnisty: IG ~58",
+                buckwheatGI: "Grzybobambka: IG ~54",
+                whiteRiceGI: "Biały ryż: IG ~73",
+                potatoesGI: "Ziemniaki (ugotowane): IG ~78",
+                whiteBreadGI: "Biały chleb: IG ~75",
+                watermelonGI: "Arbuz: IG ~72",
+                cornFlakesGI: "Płatki kukurydziane: IG ~81",
+                glucoseGI: "Glukoza: IG 100 (punkt odniesienia)",
+                glycemicIndexExplanation: "IG to skala 0-100 pokazująca, jak szybko węglowodany z danego produktu podnoszą poziom glukozy we krwi. Produkty o niskim indeksie glikemicznym powodują wolniejszy, bardziej stabilny wzrost cukru, co jest korzystne dla:",
+                glycemicIndexBenefits: "• Utrzymania stabilnej energii\n• Kontroli apetytu i sytości\n• Lepszej kontroli poziomu glukozy we krwi\n• Redukcji nagłych skoków insuliny",
+                lowGIHeading: "🟢 Niski IG (<55):",
+                mediumGIHeading: "🟡 Średni IG (56-69):",
+                highGIHeading: "🔴 Wysoki IG (>70) - Ograniczaj:",
+                carbTip: "⚡ Wskazówka: Łączenie węglowodanów z białkiem i tłuszczami spowalnia wchłanianie i obniża efektywny indeks glikemiczny posiłku. Błonnik również spowalnia trawienie.",
+                hungerManagementHeading: "🍽️ Zarządzanie Głodem",
+                supplementsHeading: "💊 Suplementy",
+                frequentMealsHungerTitle: "Częste posiłki",
+                frequentMealsHunger: "Stabilny poziom cukru we krwi",
+                proteinSatietyHungerTitle: "Białko w każdym posiłku",
+                proteinSatietyHunger: "Największe poczucie sytości",
+                fiberHungerTitle: "Błonnik",
+                fiberHunger: "Zwiększa objętość posiłku",
+                hydrationHungerTitle: "Nawodnienie",
+                hydrationHunger: "Często mylimy pragnienie z głodem",
+                yerbaMateHungerTitle: "Yerba Mate",
+                yerbaMateHunger: "Naturalne hamowanie apetytu",
+                intermittentFastingHungerTitle: "Post przerywany",
+                intermittentFastingHunger: "Kontrola kalorii",
+                mindfulEatingHungerTitle: "Świadome jedzenie",
+                mindfulEatingHunger: "Lepsze rozpoznawanie sytości",
+                creatineHeading: "⚡ Kreatyna",
+                creatineText: "Jeden z najlepiej przebadanych suplementów. Pomaga mięśniom produkować energię podczas intensywnego wysiłku.",
+                creatineBenefits: "✅ Zwiększona siła i moc\n✅ Wzrost masy mięśniowej\n✅ Poprawa wydolności\n✅ Korzyści poznawcze",
+                creatineDosage: "Dawkowanie: 3-5g dziennie",
+                proteinPowderHeading: "🥤 Odżywka Białkowa",
+                proteinPowderText: "Wygodny sposób na uzupełnienie dziennego zapotrzebowania na białko.",
+                proteinTypes: "🥛 Serwatkowe (Whey): Szybko wchłanialne\n🐄 Kazeina: Wolno wchłanialne\n🌱 Sojowe: Pełnowartościowe roślinne\n🌿 Grochowe/Ryżowe: Dla wegan",
+                proteinWhen: "Kiedy: Po treningu lub jako uzupełnienie",
+                footerText: "💪 Trenuj mądrze, jedz świadomie, odpoczywaj dobrze! 🥗",
+                createdBy: "Stronę stworzył Patryk Dębowski"
+            },
+            en: {
+                title: "Complete Training & Nutrition Guide",
+                mainHeading: "💪 TRAINING & NUTRITION",
+                subHeading: "Complete guide to muscle building and healthy nutrition",
+                navTraining: "🏋️ Training",
+                navNutrition: "🥗 Nutrition",
+                navSupplements: "💊 Supplements",
+                trainingHeading: "🏋️ Muscle Growth Principles",
+                stretchingHeading: "💪 Stretching Under Load",
+                stretchingText: "Performing exercises through full range of motion is crucial for hypertrophy. When a muscle is fully stretched under load, greater microdamage and activation of anabolic pathways occur.",
+                rirHeading: "🎯 Intensity: RIR 1-3",
+                rirText: "\"Reps in Reserve\" (RIR) is the number of repetitions you could still perform. Train with RIR 1-3 for maximum growth stimulation.",
+                volumeHeading: "📊 Weekly Set Volume",
+                volumeText: "<strong>Key Points on Weekly Set Volume for Muscle Growth:</strong>" +
+                        "<ul class=\"list-disc pl-5 space-y-1 mt-2\">" +
+                            "<li><strong>Minimum Effective Dose:</strong> At least 4 sets per muscle group per week for detectable growth</li>" +
+                            "<li><strong>Optimal Range:</strong> 10-20 sets per muscle group per week for most trained individuals</li>" +
+                            "<li><strong>Diminishing Returns:</strong> Benefits decrease significantly beyond 12-20 sets per muscle group</li>" +
+                            "<li><strong>Very High Volume:</strong> >20 sets may provide marginal benefits for advanced lifters but can impair recovery</li>" +
+                            "<li><strong>Individualization:</strong> Start with moderate volume and adjust based on recovery and progress</li>" +
+                        "</ul>",
+                warmupHeading: "🔥 Warm-up Scheme",
+                warmupStep1: "Set 1: 50% load (12 reps)",
+                warmupMainSets: "Main Sets: 100% load (RIR 1-3)",
+                nutritionHeading: "🥗 Macro Calculator and Nutrition",
+                macroCalculatorHeading: "🧮 Macro Calculator",
+                weightLabel: "Weight (kg):",
+                activityLevelLabel: "Activity Level:",
+                stepsLabel: "Steps per day:",
+                calculateButton: "Calculate Macros! 🚀",
+                resultsHeading: "📊 Your Results:",
+                proteinLabel: "Protein:",
+                fatLabel: "Fats:",
+                carbsLabel: "Carbohydrates:",
+                maintenanceLabel: "Maintenance:",
+                deficitLabel: "Deficit (-200):",
+                surplusLabel: "Surplus (+200):",
+                proteinSourcesHeading: "🥩 Protein Sources",
+                animalProteinsHeading: "🐄 Animal Proteins:",
+                plantProteinsHeading: "🌱 Plant Proteins:",
+                chickenBreast: "Chicken breast: ~31g/100g",
+                salmonProtein: "Salmon: ~20g/100g",
+                tunaProtein: "Tuna: ~30g/100g",
+                eggsProtein: "Eggs: ~13g/100g (6g per large egg)",
+                cottageCheeseProtein: "Low-fat cottage cheese: ~18g/100g",
+                greekYogurtProtein: "Greek yogurt (0%): ~10g/100g",
+                leanBeefProtein: "Lean beef: ~26g/100g",
+                turkeyBreastProtein: "Turkey (breast): ~29g/100g",
+                seitanProtein: "Seitan: ~25g/100g (from wheat gluten)",
+                tempehProtein: "Tempeh: ~19g/100g (fermented soy)",
+                tofuProtein: "Tofu (firm): ~15g/100g",
+                edamameProtein: "Edamame: ~11g/100g (young soybeans)",
+                lentilsProtein: "Lentils (uncooked): ~25g/100g",
+                chickpeasProtein: "Chickpeas (uncooked): ~19g/100g",
+                blackBeansProtein: "Black beans (uncooked): ~21g/100g",
+                quinoaProtein: "Quinoa (uncooked): ~14g/100g",
+                hempSeedsProtein: "Hemp seeds: ~31g/100g",
+                spirulinaProtein: "Spirulina (dried): ~57g/100g",
+                peanutsProtein: "Peanuts: ~26g/100g",
+                almondsProtein: "Almonds: ~21g/100g",
+                pumpkinSeedsProtein: "Pumpkin seeds: ~24g/100g",
+                soyProductsInfo: "💡 Soy Products: Contain all essential amino acids. Soy isoflavones may support skin health and do not negatively affect hormone levels in healthy individuals.",
+                sourceText: "Source: ",
+                jeffNippardLink: "Jeff Nippard's YouTube Channel",
+                proteinBenefitsHeading: "📈 Protein Benefits vs Intake",
+                proteinGraphNote: "Chart: Protein benefits depending on intake (estimated). Increased protein consumption above 1.7 g/kg does not linearly bring greater benefits.",
+                healthyFatsHeading: "🥑 Healthy Fats",
+                monounsaturatedFatsHeading: "🥑 Monounsaturated (MUFA):",
+                avocadoFats: "Avocado: ~15g fat/100g",
+                oliveOilFats: "Extra virgin olive oil: ~73% MUFA",
+                almondsFats: "Almonds: ~31g fat/100g",
+                hazelnutsFats: "Hazelnuts: ~61g fat/100g",
+                macadamiaNutsFats: "Macadamia nuts: ~76g fat/100g",
+                rapeseedOilFats: "Rapeseed oil: ~62% MUFA",
+                salmonOmega3: "Salmon: ~2.3g omega-3/100g",
+                mackerelOmega3: "Mackerel: ~2.7g omega-3/100g",
+                sardinesOmega3: "Sardines: ~1.5g omega-3/100g",
+                chiaSeedsOmega3: "Chia seeds: ~17g ALA/100g",
+                flaxSeedsOmega3: "Flax seeds: ~23g ALA/100g",
+                walnutsOmega3: "Walnuts: ~9g ALA/100g",
+                flaxseedOilOmega3: "Flaxseed oil: ~53g ALA/100g",
+                sunflowerSeedsFats: "Sunflower seeds: ~51g fat/100g",
+                tahiniFats: "Tahini (sesame paste): ~54g fat/100g",
+                coconutOilFats: "Coconut oil: ~87% saturated (MCT)",
+                peanutButterFats: "Peanut butter: ~50g fat/100g",
+                eggYolksFats: "Egg yolks: ~27g fat/100g",
+                omega3Heading: "🐟 Omega-3 (EPA/DHA/ALA):",
+                otherHealthySourcesHeading: "🌰 Other Healthy Sources:",
+                whyFatsImportant: "💡 Why important? Support absorption of vitamins A, D, E, K, hormone production, brain and heart health. Omega-3 has anti-inflammatory effects.",
+                carbohydratesHeading: "🌾 Carbohydrates and Glycemic Index",
+                glycemicIndexHeading: "📚 What is Glycemic Index (GI)?",
+                leafyVegetablesGI: "Leafy vegetables: GI <15 (spinach, lettuce, arugula)",
+                broccoliCauliflowerGI: "Broccoli, cauliflower: GI ~10",
+                berriesGI: "Berries (blueberries, raspberries): GI ~25",
+                applesGI: "Apples: GI ~36",
+                orangesGI: "Oranges: GI ~45",
+                lentilsGI: "Lentils: GI ~29",
+                chickpeasGI: "Chickpeas: GI ~33",
+                beansGI: "Beans: GI ~24",
+                quinoaGI: "Quinoa: GI ~53",
+                pearsGI: "Pears: GI ~33",
+                naturalYogurtGI: "Natural yogurt: GI ~14",
+                oatmealGI: "Oatmeal: GI ~55",
+                brownRiceGI: "Brown rice: GI ~50-55",
+                sweetPotatoesGI: "Sweet potatoes: GI ~63",
+                bananasGI: "Bananas (ripe): GI ~62",
+                wholeGrainBreadGI: "Whole grain bread: GI ~56",
+                wholeGrainPastaGI: "Whole grain pasta: GI ~58",
+                buckwheatGI: "Buckwheat: GI ~54",
+                whiteRiceGI: "White rice: GI ~73",
+                potatoesGI: "Potatoes (cooked): GI ~78",
+                whiteBreadGI: "White bread: GI ~75",
+                watermelonGI: "Watermelon: GI ~72",
+                cornFlakesGI: "Corn flakes: GI ~81",
+                glucoseGI: "Glucose: GI 100 (reference point)",
+                glycemicIndexExplanation: "GI is a scale from 0-100 showing how quickly carbohydrates from a food raise blood sugar levels. Foods with a low glycemic index cause a slower, more stable rise in sugar, which is beneficial for:",
+                glycemicIndexBenefits: "• Maintaining stable energy\n• Controlling appetite and fullness\n• Better blood sugar control\n• Reducing sharp insulin spikes",
+                lowGIHeading: "🟢 Low GI (<55):",
+                mediumGIHeading: "🟡 Medium GI (56-69):",
+                highGIHeading: "🔴 High GI (>70) - Limit:",
+                carbTip: "⚡ Tip: Combining carbohydrates with protein and fats slows digestion and lowers the effective glycemic index of a meal. Fiber also slows digestion.",
+                hungerManagementHeading: "🍽️ Hunger Management",
+                supplementsHeading: "💊 Supplements",
+                frequentMealsHungerTitle: "Frequent Meals",
+                frequentMealsHunger: "Steady blood sugar level",
+                proteinSatietyHungerTitle: "Protein at Every Meal",
+                proteinSatietyHunger: "Greatest feeling of fullness",
+                fiberHungerTitle: "Fiber",
+                fiberHunger: "Increases meal volume",
+                hydrationHungerTitle: "Hydration",
+                hydrationHunger: "We often confuse thirst with hunger",
+                yerbaMateHungerTitle: "Yerba Mate",
+                yerbaMateHunger: "Natural appetite suppression",
+                intermittentFastingHungerTitle: "Intermittent Fasting",
+                intermittentFastingHunger: "Calorie control",
+                mindfulEatingHungerTitle: "Mindful Eating",
+                mindfulEatingHunger: "Better recognition of fullness",
+                creatineHeading: "⚡ Creatine",
+                creatineText: "One of the most well-researched supplements. Helps muscles produce energy during intense effort.",
+                creatineBenefits: "✅ Increased strength and power\n✅ Muscle mass growth\n✅ Improved endurance\n✅ Cognitive benefits",
+                creatineDosage: "Dosage: 3-5g daily",
+                proteinPowderHeading: "🥤 Protein Powder",
+                proteinPowderText: "Convenient way to supplement daily protein needs.",
+                proteinTypes: "🥛 Whey: Fast absorbing\n🐄 Casein: Slow absorbing\n🌱 Soy: Complete plant-based\n🌿 Pea/Rice: For vegans",
+                proteinWhen: "When: After workout or as a supplement",
+                footerText: "💪 Train wisely, eat mindfully, recover well! 🥗",
+                createdBy: "Page created by Patryk Dębowski"
+            }
+        };
+
+        // Set initial language
+        let currentLang = 'en';
+
+        // Function to switch language
+        function switchLanguage(lang) {
+            console.log('Switching language to:', lang);
+            currentLang = lang;
+            
+            // Update button text
+            document.getElementById('currentLang').textContent = lang.toUpperCase();
+            
+            // Update page title
+            if (translations[lang] && translations[lang]['title']) {
+                document.title = translations[lang]['title'];
+            }
+            
+            // Update all elements with data-lang attribute
+            const elements = document.querySelectorAll('[data-lang]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-lang');
+                if (translations[lang] && translations[lang][key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        if (element.placeholder) {
+                            element.placeholder = translations[lang][key];
+                        } else {
+                            element.value = translations[lang][key];
+                        }
+                    } else {
+                        element.innerHTML = translations[lang][key];
+                    }
+                }
+            });
+            
+            // Update activity level options
+            const activitySelect = document.getElementById('activityLevel');
+            if (activitySelect) {
+                if (lang === 'pl') {
+                    activitySelect.innerHTML = `
+                        <option value="sedentary">Siedzący</option>
+                        <option value="light">Lekko aktywny</option>
+                        <option value="moderate">Umiarkowanie aktywny</option>
+                        <option value="heavy">Bardzo aktywny</option>
+                        <option value="veryHeavy">Ekstremalnie aktywny</option>
+                    `;
+                } else {
+                    activitySelect.innerHTML = `
+                        <option value="sedentary">Sedentary</option>
+                        <option value="light">Lightly Active</option>
+                        <option value="moderate">Moderately Active</option>
+                        <option value="heavy">Very Active</option>
+                        <option value="veryHeavy">Extremely Active</option>
+                    `;
+                }
+            }
+            
+            // Update chart labels
+            console.log('Updating charts for language:', lang);
+            updateCharts();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Language switcher functionality
+            const langBtn = document.getElementById('currentLang');
+            const langDropdown = document.getElementById('langDropdown');
+            
+            langBtn.addEventListener('click', function() {
+                langDropdown.classList.toggle('active');
+            });
+            
+            // Add event listeners to language options
+            document.querySelectorAll('.lang-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    switchLanguage(lang);
+                    
+                    // Update active class
+                    document.querySelectorAll('.lang-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Hide dropdown
+                    langDropdown.classList.remove('active');
+                });
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!langBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+                    langDropdown.classList.remove('active');
+                }
+            });
+        });
+        
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -536,7 +1043,8 @@
             const steps = parseFloat(document.getElementById('steps').value) || 0;
 
             if (isNaN(weight) || weight <= 0) {
-                showAlert('Proszę wprowadzić prawidłową wagę.');
+                const errorMsg = currentLang === 'pl' ? 'Proszę wprowadzić prawidłową wagę.' : 'Please enter a valid weight.';
+                showAlert(errorMsg);
                 return;
             }
 
@@ -571,176 +1079,374 @@
         }
 
         function drawProteinGraph() {
-            const canvas = document.getElementById('proteinGraph');
-            const ctx = canvas.getContext('2d');
+            try {
+                const canvas = document.getElementById('proteinGraph');
+                const fallback = document.getElementById('proteinGraphFallback');
+                
+                // Hide fallback and show canvas
+                if (fallback) fallback.style.display = 'none';
+                if (canvas) canvas.style.display = 'block';
+                
+                const ctx = canvas.getContext('2d');
 
-            // Set canvas dimensions to match container
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = container.clientHeight;
+                // Set canvas dimensions to match container
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            const padding = 40;
-            const graphWidth = canvas.width - 2 * padding;
-            const graphHeight = canvas.height - 2 * padding;
+                const padding = 40;
+                const graphWidth = canvas.width - 2 * padding;
+                const graphHeight = canvas.height - 2 * padding;
 
-            // Draw axes
-            ctx.strokeStyle = '#a0aec0'; // Gray-400
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(padding, padding);
-            ctx.lineTo(padding, padding + graphHeight);
-            ctx.lineTo(padding + graphWidth, padding + graphHeight);
-            ctx.stroke();
+                // Draw axes
+                ctx.strokeStyle = '#a0aec0'; // Gray-400
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(padding, padding);
+                ctx.lineTo(padding, padding + graphHeight);
+                ctx.lineTo(padding + graphWidth, padding + graphHeight);
+                ctx.stroke();
 
-            // Labels
-            ctx.fillStyle = '#2d3748'; // Gray-800
-            ctx.font = '12px Inter';
-            ctx.textAlign = 'center';
-            ctx.fillText('Spożycie białka (g/kg masy ciała)', padding + graphWidth / 2, canvas.height - 10);
-            ctx.save();
-            ctx.translate(10, padding + graphHeight / 2);
-            ctx.rotate(-Math.PI / 2);
-            ctx.fillText('Korzyści', 0, 0);
-            ctx.restore();
+                // Labels
+                ctx.fillStyle = '#2d3748'; // Gray-800
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'center';
+                const proteinIntakeLabel = currentLang === 'pl' ? 
+                    'Spożycie białka (g/kg masy ciała)' : 
+                    'Protein intake (g/kg body weight)';
+                const benefitsLabel = currentLang === 'pl' ? 
+                    'Korzyści' : 
+                    'Benefits';
+                ctx.fillText(proteinIntakeLabel, padding + graphWidth / 2, canvas.height - 10);
+                ctx.save();
+                ctx.translate(10, padding + graphHeight / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillText(benefitsLabel, 0, 0);
+                ctx.restore();
 
-            // Protein curve data (simplified for illustration)
-            const proteinData = [];
-            for (let i = 0; i <= 30; i++) { // x-axis: 0 to 3.0 g/kg
-                const x = i / 10;
-                let y;
-                if (x <= 1.7) {
-                    y = 0.5 * x; // Linear increase up to 1.7
-                } else if (x <= 2.5) {
-                    y = 0.5 * 1.7 + 0.1 * (x - 1.7); // Diminishing returns
-                } else {
-                    y = 0.5 * 1.7 + 0.1 * (2.5 - 1.7) + 0.02 * (x - 2.5); // Even slower returns
+                // Protein curve data (simplified for illustration)
+                const proteinData = [];
+                for (let i = 0; i <= 30; i++) { // x-axis: 0 to 3.0 g/kg
+                    const x = i / 10;
+                    let y;
+                    if (x <= 1.7) {
+                        y = 0.5 * x; // Linear increase up to 1.7
+                    } else if (x <= 2.5) {
+                        y = 0.5 * 1.7 + 0.1 * (x - 1.7); // Diminishing returns
+                    } else {
+                        y = 0.5 * 1.7 + 0.1 * (2.5 - 1.7) + 0.02 * (x - 2.5); // Even slower returns
+                    }
+                    proteinData.push({ x: x, y: y });
                 }
-                proteinData.push({ x: x, y: y });
+
+                // Scale data to canvas coordinates
+                const maxProteinX = 3.0; // Max g/kg on graph
+                const maxBenefitY = proteinData[proteinData.length - 1].y * 1.2; // Slightly more than max calculated benefit
+
+                ctx.beginPath();
+                ctx.strokeStyle = '#8b5cf6'; // Purple-500
+                ctx.lineWidth = 3;
+                ctx.lineJoin = 'round';
+
+                proteinData.forEach((point, index) => {
+                    const xPos = padding + (point.x / maxProteinX) * graphWidth;
+                    const yPos = padding + graphHeight - (point.y / maxBenefitY) * graphHeight;
+                    if (index === 0) {
+                        ctx.moveTo(xPos, yPos);
+                    } else {
+                        ctx.lineTo(xPos, yPos);
+                    }
+                });
+                ctx.stroke();
+
+                // Add key points on x-axis
+                ctx.fillStyle = '#2d3748';
+                ctx.textAlign = 'center';
+                ctx.fillText('0', padding, padding + graphHeight + 15);
+                ctx.fillText('1.0', padding + (1.0 / maxProteinX) * graphWidth, padding + graphHeight + 15);
+                ctx.fillText('1.7', padding + (1.7 / maxProteinX) * graphWidth, padding + graphHeight + 15);
+                ctx.fillText('2.5', padding + (2.5 / maxProteinX) * graphWidth, padding + graphHeight + 15);
+                ctx.fillText('3.0', padding + (3.0 / maxProteinX) * graphWidth, padding + graphHeight + 15);
+
+                // Add key points on y-axis (simplified)
+                ctx.textAlign = 'right';
+                const lowLabel = currentLang === 'pl' ? 'Niskie' : 'Low';
+                const highLabel = currentLang === 'pl' ? 'Wysokie' : 'High';
+                ctx.fillText(lowLabel, padding - 5, padding + graphHeight);
+                ctx.fillText(highLabel, padding - 5, padding + 10);
+
+                // Highlight optimal zone (1.0-1.7 g/kg)
+                ctx.fillStyle = 'rgba(139, 92, 246, 0.1)'; // Purple with transparency
+                const x1 = padding + (1.0 / maxProteinX) * graphWidth;
+                const x2 = padding + (1.7 / maxProteinX) * graphWidth;
+                ctx.fillRect(x1, padding, x2 - x1, graphHeight);
+            } catch (error) {
+                console.error('Error drawing protein graph:', error);
+                
+                // Show fallback and hide canvas
+                const canvas = document.getElementById('proteinGraph');
+                const fallback = document.getElementById('proteinGraphFallback');
+                
+                if (canvas) canvas.style.display = 'none';
+                if (fallback) fallback.style.display = 'block';
             }
-
-            // Scale data to canvas coordinates
-            const maxProteinX = 3.0; // Max g/kg on graph
-            const maxBenefitY = proteinData[proteinData.length - 1].y * 1.2; // Slightly more than max calculated benefit
-
-            ctx.beginPath();
-            ctx.strokeStyle = '#8b5cf6'; // Purple-500
-            ctx.lineWidth = 3;
-            ctx.lineJoin = 'round';
-
-            proteinData.forEach((point, index) => {
-                const xPos = padding + (point.x / maxProteinX) * graphWidth;
-                const yPos = padding + graphHeight - (point.y / maxBenefitY) * graphHeight;
-                if (index === 0) {
-                    ctx.moveTo(xPos, yPos);
-                } else {
-                    ctx.lineTo(xPos, yPos);
-                }
-            });
-            ctx.stroke();
-
-            // Add key points on x-axis
-            ctx.fillStyle = '#2d3748';
-            ctx.textAlign = 'center';
-            ctx.fillText('0', padding, padding + graphHeight + 15);
-            ctx.fillText('1.0', padding + (1.0 / maxProteinX) * graphWidth, padding + graphHeight + 15);
-            ctx.fillText('1.7', padding + (1.7 / maxProteinX) * graphWidth, padding + graphHeight + 15);
-            ctx.fillText('2.5', padding + (2.5 / maxProteinX) * graphWidth, padding + graphHeight + 15);
-            ctx.fillText('3.0', padding + (3.0 / maxProteinX) * graphWidth, padding + graphHeight + 15);
-
-            // Add key points on y-axis (simplified)
-            ctx.textAlign = 'right';
-            ctx.fillText('Niskie', padding - 5, padding + graphHeight);
-            ctx.fillText('Wysokie', padding - 5, padding + 10);
-
-            // Highlight optimal zone (1.0-1.7 g/kg)
-            ctx.fillStyle = 'rgba(139, 92, 246, 0.1)'; // Purple with transparency
-            const x1 = padding + (1.0 / maxProteinX) * graphWidth;
-            const x2 = padding + (1.7 / maxProteinX) * graphWidth;
-            ctx.fillRect(x1, padding, x2 - x1, graphHeight);
-        }
-
-        async function getTrainingTip() {
-            const input = document.getElementById('trainingInput').value.trim();
-            const output = document.getElementById('trainingTipOutput');
-            
-            if (!input) {
-                output.textContent = 'Proszę opisać swój trening.';
-                return;
-            }
-            
-            output.textContent = 'Świetny trening! Pamiętaj o pełnym zakresie ruchu i trenowaniu z RIR 1-3 dla maksymalnej hipertrofii. Skup się na jakości wykonania, a nie tylko na ciężarze.';
-        }
-
-        async function askNutritionQuestion() {
-            const question = document.getElementById('nutritionQuestion').value.trim();
-            const answer = document.getElementById('nutritionAnswer');
-            
-            if (!question) {
-                answer.textContent = 'Proszę zadać pytanie o żywienie.';
-                return;
-            }
-            
-            answer.textContent = 'Doskonałe pytanie! Pamiętaj o zbilansowanej diecie z odpowiednią ilością białka (1.0-1.7g/kg), zdrowych tłuszczów i węglowodanów o niskim IG. Regularne posiłki i nawodnienie to klucz do sukcesu.';
         }
 
         function showAlert(message) {
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            const okText = currentLang === 'pl' ? 'OK' : 'OK';
             modal.innerHTML = `
                 <div class="glass-card p-6 max-w-sm w-full text-center">
                     <p class="text-lg font-semibold text-gray-800 mb-4">${message}</p>
-                    <button onclick="this.closest('.fixed').remove()" class="btn-primary text-white font-bold py-2 px-4 rounded-lg">OK</button>
+                    <button onclick="this.closest('.fixed').remove()" class="btn-primary text-white font-bold py-2 px-4 rounded-lg">${okText}</button>
                 </div>
             `;
             document.body.appendChild(modal);
         }
 
+        // Create charts with language support
+        function createCharts() {
+            try {
+                console.log('Creating charts...');
+                
+                // Show fallback messages initially
+                const rirFallback = document.getElementById('rirChartFallback');
+                const volumeFallback = document.getElementById('volumeChartFallback');
+                
+                if (rirFallback) rirFallback.style.display = 'block';
+                if (volumeFallback) volumeFallback.style.display = 'block';
+                
+                // Check if Chart.js is loaded
+                if (typeof Chart === 'undefined') {
+                    console.error('Chart.js is not loaded');
+                    return;
+                }
+                
+                // Check if canvas elements exist
+                const rirCanvas = document.getElementById('rirChart');
+                const volumeCanvas = document.getElementById('volumeChart');
+                
+                if (!rirCanvas) {
+                    console.error('RIR chart canvas not found');
+                    return;
+                }
+                
+                if (!volumeCanvas) {
+                    console.error('Volume chart canvas not found');
+                    return;
+                }
+                
+                console.log('Canvas elements found, proceeding with chart creation');
+                
+                // Hide fallback messages
+                if (rirFallback) rirFallback.style.display = 'none';
+                if (volumeFallback) volumeFallback.style.display = 'none';
+                
+                // Show canvas elements
+                rirCanvas.style.display = 'block';
+                volumeCanvas.style.display = 'block';
+                
+                // Destroy existing charts if they exist and are valid Chart instances
+                if (window.rirChart) {
+                    if (typeof window.rirChart.destroy === 'function') {
+                        window.rirChart.destroy();
+                    } else if (window.rirChart.chart && typeof window.rirChart.chart.destroy === 'function') {
+                        window.rirChart.chart.destroy();
+                    }
+                    delete window.rirChart;
+                }
+                if (window.volumeChart) {
+                    if (typeof window.volumeChart.destroy === 'function') {
+                        window.volumeChart.destroy();
+                    } else if (window.volumeChart.chart && typeof window.volumeChart.chart.destroy === 'function') {
+                        window.volumeChart.chart.destroy();
+                    }
+                    delete window.volumeChart;
+                }
+                
+                // Create RIR Chart
+                const rirCtx = rirCanvas.getContext('2d');
+                const rirLabels = currentLang === 'pl' ? 
+                    ['RIR 0\n(Upadek)', 'RIR 1-3\n(Wzrost)', 'RIR 4+\n(Za lekko)'] : 
+                    ['RIR 0\n(Failure)', 'RIR 1-3\n(Growth)', 'RIR 4+\n(Too Easy)'];
+                
+                window.rirChart = new Chart(rirCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: rirLabels,
+                        datasets: [{
+                            data: [9, 10, 5],
+                            backgroundColor: ['#f59e0b', '#10b981', '#ef4444'],
+                            borderRadius: 8,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { display: false }, x: { grid: { display: false } } }
+                    }
+                });
+                
+                console.log('RIR Chart created:', window.rirChart);
+
+                // Create Volume Chart (Weekly Set Volume)
+                const volumeCtx = volumeCanvas.getContext('2d');
+                const volumeLabels = currentLang === 'pl' ? 
+                    ['0-4\n(Zbyt mało)', '5-9\n(Minimalny efekt)', '10-20\n(Optymalny)', '20+\n(Zmniejszona efektywność)'] : 
+                    ['0-4\n(Too Low)', '5-9\n(Minimal Effect)', '10-20\n(Optimal)', '20+\n(Diminishing Returns)'];
+                
+                window.volumeChart = new Chart(volumeCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: volumeLabels,
+                        datasets: [{
+                            label: currentLang === 'pl' ? 'Skuteczność' : 'Effectiveness',
+                            data: [1, 3, 10, 6],
+                            backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#f59e0b'],
+                            borderRadius: 8,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    title: function(context) {
+                                        const label = context[0].label;
+                                        if (currentLang === 'pl') {
+                                            if (label.includes('0-4')) return '0-4 serie';
+                                            if (label.includes('5-9')) return '5-9 serii';
+                                            if (label.includes('10-20')) return '10-20 serii';
+                                            if (label.includes('20+')) return '20+ serii';
+                                        } else {
+                                            if (label.includes('0-4')) return '0-4 sets';
+                                            if (label.includes('5-9')) return '5-9 sets';
+                                            if (label.includes('10-20')) return '10-20 sets';
+                                            if (label.includes('20+')) return '20+ sets';
+                                        }
+                                        return label;
+                                    },
+                                    label: function(context) {
+                                        const value = context.parsed.y;
+                                        if (currentLang === 'pl') {
+                                            return `Skuteczność: ${value}/10`;
+                                        } else {
+                                            return `Effectiveness: ${value}/10`;
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        scales: { 
+                            y: { 
+                                display: true,
+                                min: 0,
+                                max: 10,
+                                title: {
+                                    display: true,
+                                    text: currentLang === 'pl' ? 'Skuteczność Wzrostu Mięśni' : 'Muscle Growth Effectiveness',
+                                    font: { size: 12 }
+                                }
+                            }, 
+                            x: { 
+                                grid: { display: false },
+                                ticks: {
+                                    font: { size: 11 }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                console.log('Volume Chart created:', window.volumeChart);
+
+                console.log('Charts created successfully');
+                
+                // Initial protein graph draw
+                drawProteinGraph();
+            } catch (error) {
+                console.error('Error creating charts:', error);
+                
+                // Show fallback messages on error
+                const rirFallback = document.getElementById('rirChartFallback');
+                const volumeFallback = document.getElementById('volumeChartFallback');
+                
+                if (rirFallback) rirFallback.style.display = 'block';
+                if (volumeFallback) volumeFallback.style.display = 'block';
+                
+                // Hide canvas elements
+                const rirCanvas = document.getElementById('rirChart');
+                const volumeCanvas = document.getElementById('volumeChart');
+                
+                if (rirCanvas) rirCanvas.style.display = 'none';
+                if (volumeCanvas) volumeCanvas.style.display = 'none';
+            }
+        }
+        
+        // Update charts when language changes
+        function updateCharts() {
+            // Add a small delay to ensure the language switch is complete
+            setTimeout(function() {
+                createCharts();
+            }, 50);
+        }
+        
         window.onload = function() {
-            const rirCtx = document.getElementById('rirChart').getContext('2d');
-            new Chart(rirCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['RIR 0\n(Upadek)', 'RIR 1-3\n(Wzrost)', 'RIR 4+\n(Za lekko)'],
-                    datasets: [{
-                        data: [9, 10, 5],
-                        backgroundColor: ['#f59e0b', '#10b981', '#ef4444'],
-                        borderRadius: 8,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { display: false }, x: { grid: { display: false } } }
+            console.log('Window loaded, Chart.js status:', typeof Chart !== 'undefined' ? 'Loaded' : 'Not loaded');
+            if (typeof Chart !== 'undefined') {
+                console.log('Chart.js version:', Chart.version);
+            }
+            
+            // Set initial language to English
+            switchLanguage('en');
+            
+            // Create charts after a small delay to ensure DOM and Chart.js are ready
+            setTimeout(function() {
+                // Check if Chart.js is loaded before creating charts
+                if (typeof Chart !== 'undefined') {
+                    console.log('Creating charts after window load');
+                    createCharts();
+                } else {
+                    console.error('Chart.js not loaded, retrying in 500ms');
+                    setTimeout(function() {
+                        if (typeof Chart !== 'undefined') {
+                            createCharts();
+                        } else {
+                            console.error('Chart.js still not loaded after retry');
+                        }
+                    }, 500);
                 }
-            });
-
-            const volumeCtx = document.getElementById('volumeChart').getContext('2d');
-            new Chart(volumeCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Optymalny\n(1-6 Serii)', 'Minimalny\n(>6 Serii)'],
-                    datasets: [{
-                        data: [85, 15],
-                        backgroundColor: ['#3b82f6', '#fbbf24'],
-                        cutout: '60%'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom' } }
-                }
-            });
-
-            // Initial protein graph draw
-            drawProteinGraph();
+            }, 200);
             
             // Redraw protein graph on window resize
             window.addEventListener('resize', drawProteinGraph);
         };
+
+        // Manual chart initialization function
+        function initCharts() {
+            console.log('Manual chart initialization triggered');
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js is not loaded');
+                return;
+            }
+            createCharts();
+        }
+        
+        // Debug function to check Chart.js status
+        function checkChartStatus() {
+            console.log('Chart.js status:');
+            console.log('Chart object:', typeof Chart !== 'undefined' ? Chart : 'Not loaded');
+            console.log('RIR Chart:', window.rirChart);
+            console.log('Volume Chart:', window.volumeChart);
+            console.log('RIR Canvas:', document.getElementById('rirChart'));
+            console.log('Volume Canvas:', document.getElementById('volumeChart'));
+        }
     </script>
 </body>
 </html>
