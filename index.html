@@ -171,6 +171,7 @@
                 <a href="#training" data-lang="navTraining">Training</a>
                 <a href="#nutrition" data-lang="navNutrition">Nutrition</a>
                 <a href="#supplements" data-lang="navSupplements">Supplements</a>
+                <a href="#recovery" data-lang="navRecovery">Recovery</a>
             </nav>
             <div class="lang-switcher">
                 <button type="button" class="lang-btn" id="currentLang" aria-expanded="false" aria-controls="langDropdown" data-lang-aria="languageLabel" aria-label="Change language">EN</button>
@@ -203,6 +204,9 @@
                 </a>
                 <a href="#supplements" class="btn-primary px-6 py-3 font-semibold" data-lang="navSupplements">
                      Supplements
+                </a>
+                <a href="#recovery" class="btn-primary px-6 py-3 font-semibold" data-lang="navRecovery">
+                     Recovery
                 </a>
             </div>
         </nav>
@@ -668,8 +672,36 @@
                         <li> <span class="font-semibold">Pea/Rice:</span> For vegans</li>
                     </ul>
                     <div class="mt-4 p-3 callout">
-                        <p class="text-xs signal" data-lang="proteinWhen"><span class="font-semibold">When:</span> After workout or as a supplement</p>
+                        <p class="text-xs signal" data-lang="proteinWhen"><span class="font-semibold">Myth check — the "anabolic window":</span> meta-analyses (Schoenfeld & Aragon 2018; Morton et al. 2018) show total daily protein (1.6–2.2 g/kg) drives nearly all growth — eating protein within a few hours around training is plenty. No need to sprint for a shake within 30 minutes.</p>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recovery Section -->
+        <section id="recovery" class="mb-16">
+            <span class="section-label" data-lang="recoveryLabel">04 — Recovery</span>
+            <h2 class="font-bold section-header text-center mb-8" data-lang="recoveryHeading"> Recovery: Where Growth Happens</h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass-card">
+                    <h3 class="font-bold surface-heading text-white p-4 card-title mb-6 text-center" data-lang="sleepRecoveryTitle"> Sleep 7–9 hours</h3>
+                    <p class="muted mb-4" data-lang="sleepRecovery">Most growth hormone is released in deep sleep, and one short night measurably lowers testosterone and next-day performance. Treat 7–9 hours as part of the program, not a luxury — no supplement compensates for chronic short sleep.</p>
+                </div>
+
+                <div class="glass-card">
+                    <h3 class="font-bold surface-heading text-white p-4 card-title mb-6 text-center" data-lang="restDaysRecoveryTitle"> Muscles grow on rest days</h3>
+                    <p class="muted mb-4" data-lang="restDaysRecovery">Training is the stimulus; muscle is built between sessions. Give each muscle about 48 hours before training it hard again — 2–4 sessions per week per muscle group is plenty, and protein synthesis does its work on the days off.</p>
+                </div>
+
+                <div class="glass-card">
+                    <h3 class="font-bold surface-heading text-white p-4 card-title mb-6 text-center" data-lang="deloadRecoveryTitle"> Deload every 6–10 weeks</h3>
+                    <p class="muted mb-4" data-lang="deloadRecovery">When lifts stall for 2+ weeks, joints ache, or motivation dies, take an easy week at about 50% volume with the same exercises. Planned deloads prevent forced ones — injury or burnout costs months, a light week costs nothing.</p>
+                </div>
+
+                <div class="glass-card">
+                    <h3 class="font-bold surface-heading text-white p-4 card-title mb-6 text-center" data-lang="activeRecoveryTitle"> Move on off days</h3>
+                    <p class="muted mb-4" data-lang="activeRecovery">Recovery means rest from hard training, not from movement. Walks and 8–10k daily steps boost blood flow, clear soreness faster, and add calorie burn without impairing recovery.</p>
                 </div>
             </div>
         </section>
@@ -677,6 +709,7 @@
         <footer class="site-foot text-center py-8">
             <p class="text-lg font-medium" data-lang="footerText"> Train wisely, eat mindfully, recover well! </p>
             <p class="text-sm mt-2" data-lang="createdBy">Page created by Patryk Dębowski</p>
+            <p class="text-xs mt-4 muted" data-lang="disclaimerText">Educational content, not medical advice. Consult a doctor or dietitian before major diet changes, especially with existing health conditions.</p>
         </footer>
     </div>
 
@@ -740,6 +773,7 @@
                 navTraining: " Trening",
                 navNutrition: " Żywienie",
                 navSupplements: " Suplementy",
+                navRecovery: " Regeneracja",
                 trainingHeading: " Zasady Wzrostu Mięśni",
                 stretchingHeading: " Rozciąganie pod obciążeniem",
                 stretchingText: "Wykonywanie ćwiczeń przez pełny zakres ruchu jest kluczowe dla hipertrofii. Gdy mięsień jest w pełni rozciągnięty pod obciążeniem, następuje większe mikrouszkodzenie włókien mięśniowych i aktywacja dróg anabolicznych.",
@@ -880,9 +914,20 @@
                 proteinPowderHeading: " Odżywka Białkowa",
                 proteinPowderText: "Wygodny sposób na uzupełnienie dziennego zapotrzebowania na białko.",
                 proteinTypes: " Serwatkowe (Whey): Szybko wchłanialne\n Kazeina: Wolno wchłanialne\n Sojowe: Pełnowartościowe roślinne\n Grochowe/Ryżowe: Dla wegan",
-                proteinWhen: "Kiedy: Po treningu lub jako uzupełnienie",
+                proteinWhen: "Mit „okna anabolicznego”: metaanalizy (Schoenfeld i Aragon 2018; Morton i in. 2018) pokazują, że o wzroście decyduje dobowa podaż białka (1,6–2,2 g/kg) — wystarczy zjeść białko w ciągu kilku godzin wokół treningu. Nie musisz biec po szejk w 30 minut.",
+                recoveryLabel: "04 — Regeneracja",
+                recoveryHeading: " Regeneracja: tu rosną mięśnie",
+                sleepRecoveryTitle: " Śpij 7–9 godzin",
+                sleepRecovery: "Większość hormonu wzrostu uwalniana jest w głębokim śnie, a jedna zarwana noc mierzalnie obniża testosteron i formę następnego dnia. Traktuj 7–9 godzin jak część planu, nie luksus — żaden suplement nie zrekompensuje chronicznego niedosypiania.",
+                restDaysRecoveryTitle: " Mięśnie rosną w dni wolne",
+                restDaysRecovery: "Trening to bodziec; mięsień buduje się między sesjami. Daj każdej partii ok. 48 godzin przed kolejnym mocnym treningiem — 2–4 sesje tygodniowo na partię w zupełności wystarczą, a synteza białek robi swoje w dni pauzy.",
+                deloadRecoveryTitle: " Deload co 6–10 tygodni",
+                deloadRecovery: "Gdy ciężary stoją 2+ tygodnie, stawy bolą albo umiera motywacja — zrób luźny tydzień na ok. 50% objętości z tymi samymi ćwiczeniami. Planowany deload zapobiega wymuszonemu: kontuzja lub wypalenie kosztują miesiące, lekki tydzień nic.",
+                activeRecoveryTitle: " Ruszaj się w dni wolne",
+                activeRecovery: "Regeneracja to pauza od ciężkiego treningu, nie od ruchu. Spacery i 8–10 tys. kroków dziennie poprawiają krążenie, szybciej usuwają zakwasy i dokładają wydatek kalorii bez psucia regeneracji.",
                 footerText: " Trenuj mądrze, jedz świadomie, odpoczywaj dobrze! ",
-                createdBy: "Stronę stworzył Patryk Dębowski"
+                createdBy: "Stronę stworzył Patryk Dębowski",
+                disclaimerText: "Treści edukacyjne, nie porada medyczna. Przed większymi zmianami w diecie skonsultuj się z lekarzem lub dietetykiem, zwłaszcza przy chorobach przewlekłych."
             },
             en: {
                 railLocation: "GUIDE / WARSAW",
@@ -941,6 +986,7 @@
                 navTraining: " Training",
                 navNutrition: " Nutrition",
                 navSupplements: " Supplements",
+                navRecovery: " Recovery",
                 trainingHeading: " Muscle Growth Principles",
                 stretchingHeading: " Stretching Under Load",
                 stretchingText: "Performing exercises through full range of motion is crucial for hypertrophy. When a muscle is fully stretched under load, greater microdamage and activation of anabolic pathways occur.",
@@ -1081,9 +1127,20 @@
                 proteinPowderHeading: " Protein Powder",
                 proteinPowderText: "Convenient way to supplement daily protein needs.",
                 proteinTypes: " Whey: Fast absorbing\n Casein: Slow absorbing\n Soy: Complete plant-based\n Pea/Rice: For vegans",
-                proteinWhen: "When: After workout or as a supplement",
+                proteinWhen: "Myth check — the \"anabolic window\": meta-analyses (Schoenfeld & Aragon 2018; Morton et al. 2018) show total daily protein (1.6–2.2 g/kg) drives nearly all growth — eating protein within a few hours around training is plenty. No need to sprint for a shake within 30 minutes.",
+                recoveryLabel: "04 — Recovery",
+                recoveryHeading: " Recovery: Where Growth Happens",
+                sleepRecoveryTitle: " Sleep 7–9 hours",
+                sleepRecovery: "Most growth hormone is released in deep sleep, and one short night measurably lowers testosterone and next-day performance. Treat 7–9 hours as part of the program, not a luxury — no supplement compensates for chronic short sleep.",
+                restDaysRecoveryTitle: " Muscles grow on rest days",
+                restDaysRecovery: "Training is the stimulus; muscle is built between sessions. Give each muscle about 48 hours before training it hard again — 2–4 sessions per week per muscle group is plenty, and protein synthesis does its work on the days off.",
+                deloadRecoveryTitle: " Deload every 6–10 weeks",
+                deloadRecovery: "When lifts stall for 2+ weeks, joints ache, or motivation dies, take an easy week at about 50% volume with the same exercises. Planned deloads prevent forced ones — injury or burnout costs months, a light week costs nothing.",
+                activeRecoveryTitle: " Move on off days",
+                activeRecovery: "Recovery means rest from hard training, not from movement. Walks and 8–10k daily steps boost blood flow, clear soreness faster, and add calorie burn without impairing recovery.",
                 footerText: " Train wisely, eat mindfully, recover well! ",
-                createdBy: "Page created by Patryk Dębowski"
+                createdBy: "Page created by Patryk Dębowski",
+                disclaimerText: "Educational content, not medical advice. Consult a doctor or dietitian before major diet changes, especially with existing health conditions."
             }
         };
 
