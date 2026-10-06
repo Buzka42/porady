@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -174,10 +174,10 @@
                 <a href="#recovery" data-lang="navRecovery">Recovery</a>
             </nav>
             <div class="lang-switcher">
-                <button type="button" class="lang-btn" id="currentLang" aria-expanded="false" aria-controls="langDropdown" data-lang-aria="languageLabel" aria-label="Change language">EN</button>
+                <button type="button" class="lang-btn" id="currentLang" aria-expanded="false" aria-controls="langDropdown" data-lang-aria="languageLabel" aria-label="Change language">PL</button>
                 <div class="lang-dropdown" id="langDropdown">
-                    <button type="button" class="lang-option" data-language="pl" lang="pl" aria-pressed="false">Polski</button>
-                    <button type="button" class="lang-option active" data-language="en" lang="en" aria-pressed="true">English</button>
+                    <button type="button" class="lang-option active" data-language="pl" lang="pl" aria-pressed="true">Polski</button>
+                    <button type="button" class="lang-option" data-language="en" lang="en" aria-pressed="false">English</button>
                 </div>
             </div>
         </div>
@@ -1144,7 +1144,7 @@
             }
         };
 
-        let currentLang = 'en';
+        let currentLang = 'pl';
         let lastNutrition = null;
         const activityFactors = { sedentary: 1.2, light: 1.375, moderate: 1.55, heavy: 1.725, veryHeavy: 1.9 };
         const activityHelpKeys = { sedentary: 'activitySedentaryHelp', light: 'activityLightHelp', moderate: 'activityModerateHelp', heavy: 'activityHeavyHelp', veryHeavy: 'activityVeryHeavyHelp' };
@@ -1346,7 +1346,7 @@
                 document.querySelectorAll('#nutritionForm [aria-invalid]').forEach(input => input.removeAttribute('aria-invalid'));
                 updateActivityHelp();
             });
-            switchLanguage('en');
+            switchLanguage('pl');
         });
     </script>
 </body>
